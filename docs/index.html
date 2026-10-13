@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Developer Cashflow Survival Simulator</title>
+<style>
+:root{--bg:#0b0e13;--panel:#121722;--line:#243044;--ink:#e8ecf3;--dim:#8794ab;--amber:#ffb020;--red:#ff4d4d;--green:#35d08a;--blue:#4aa3ff;
+--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;--sans:"Segoe UI",Tahoma,"Noto Naskh Arabic","Noto Sans Arabic",Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 500px at 85% -10%,#1c2433 0,transparent 60%),var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 1px,transparent 1px 3px);z-index:0}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px}
+h1{margin:0;font-size:1.55rem;letter-spacing:.2px}
+h1 small{display:block;font:500 .72rem var(--mono);color:var(--amber);letter-spacing:.18em;text-transform:uppercase;margin-bottom:4px}
+.sub{color:var(--dim);max-width:62ch;margin:.4rem 0 0;font-size:.92rem}
+button{font:600 .9rem var(--sans);cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:6px}
+button:hover{border-color:var(--amber)}
+button.go{background:var(--amber);color:#1a1200;border-color:var(--amber)}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.warn{margin:14px 0;padding:10px 14px;border:1px dashed #6b5a2a;background:#1a1608;color:#e9d9a6;border-radius:6px;font-size:.85rem}
+.grid{display:grid;grid-template-columns:330px 1fr;gap:18px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.card h2{margin:0 0 10px;font:600 .78rem var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.f{display:grid;grid-template-columns:1fr 104px;gap:8px;align-items:center;margin:6px 0;font-size:.88rem}
+.f input{width:100%;background:#0b0f16;border:1px solid var(--line);color:var(--ink);padding:5px 7px;border-radius:5px;font:.88rem var(--mono);direction:ltr;text-align:right}
+.f input:focus{outline:1px solid var(--amber)}
+.hint{color:var(--dim);font-size:.75rem}
+.gauge{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.big{font:700 3.6rem/1 var(--mono);direction:ltr}
+.big.low{color:var(--green)}.big.mid{color:var(--amber)}.big.high{color:var(--red)}
+.verdict{font-size:1.05rem}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:12px}
+.kv div{background:#0d121b;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.kv b{display:block;font:700 1.15rem var(--mono);direction:ltr;text-align:start}
+.kv span{color:var(--dim);font-size:.75rem}
+svg{width:100%;height:auto;display:block;direction:ltr;unicode-bidi:isolate}
+svg text{font-family:var(--mono);font-size:11px;fill:var(--dim)}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:center}
+td.n,th.n{font-family:var(--mono);direction:ltr}
+.heat td{font-family:var(--mono);direction:ltr;color:#071016;font-weight:700}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--dim);margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-2px;margin-inline-end:5px}
+.err{color:var(--red);font-family:var(--mono);margin:6px 0}
+.busy{opacity:.5;pointer-events:none}
+footer{margin-top:26px;color:var(--dim);font-size:.8rem;border-top:1px solid var(--line);padding-top:12px}
+a{color:var(--blue)}
+bdi{unicode-bidi:isolate}
+@media print{
+ :root{--bg:#fff;--panel:#fff;--line:#bbb;--ink:#111;--dim:#555}
+ body{background:#fff}body:before{display:none}
+ .tools,#inputs,#runrow{display:none!important}
+ .grid{display:block}.card{break-inside:avoid;border-color:#bbb}
+ .big.low{color:#0a7a46}.big.mid{color:#a86b00}.big.high{color:#c00}
+ .kv div{background:#fff}.heat td{color:#000}
+ svg text{fill:#333}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1><small id="t_kicker"></small><span id="t_title"></span></h1>
+    <p class="sub" id="t_sub"></p>
+  </div>
+  <div class="tools">
+    <button id="lang">EN</button>
+    <button id="pdf"></button>
+  </div>
+</header>
+<div class="warn" id="t_warn"></div>
+
+<div class="grid">
+  <div id="inputs">
+    <div class="card"><h2 id="t_inputs"></h2><div id="fields"></div>
+      <div class="f"><span id="t_paths"></span><input id="paths" type="number" value="2000" min="100" max="20000"></div>
+      <div class="f"><span id="t_seed"></span><input id="seed" type="number" value="7"></div>
+      <div class="f"><span id="t_target"></span><input id="target" type="number" value="10" min="0" max="100"></div>
+      <div id="runrow" style="margin-top:10px;display:flex;gap:8px"><button class="go" id="run"></button><button id="reset"></button></div>
+      <div class="err" id="err"></div>
+    </div>
+    <div class="card"><h2 id="t_xray_in"></h2>
+      <div class="f"><span id="t_rate"></span><input id="rate" type="number" value="27"></div>
+      <div id="plans"></div>
+      <button id="addplan" style="margin-top:6px"></button>
+    </div>
+  </div>
+
+  <div id="out">
+    <div class="card" id="c_verdict">
+      <h2 id="t_verdict"></h2>
+      <div class="gauge"><div class="big" id="pbig">–</div><div class="verdict" id="pverd"></div></div>
+      <div class="kv" id="kv"></div>
+    </div>
+    <div class="card"><h2 id="t_fan"></h2><svg id="fan" viewBox="0 0 760 300"></svg>
+      <div class="legend"><span><i style="background:rgba(74,163,255,.18)"></i><span id="l_b90"></span></span><span><i style="background:rgba(74,163,255,.38)"></i><span id="l_b50"></span></span><span><i style="background:var(--amber)"></i><span id="l_med"></span></span><span><i style="background:var(--red)"></i><span id="l_line"></span></span></div>
+    </div>
+    <div class="card"><h2 id="t_torn"></h2><p class="hint" id="t_torn_h"></p><svg id="torn" viewBox="0 0 760 290"></svg></div>
+    <div class="card"><h2 id="t_heat"></h2><p class="hint" id="t_heat_h"></p><div id="heat"></div>
+      <p id="maxterm" style="margin-top:10px"></p></div>
+    <div class="card"><h2 id="t_xray"></h2><p class="hint" id="t_xray_h"></p><div id="xray"></div></div>
+  </div>
+</div>
+<footer id="t_foot"></footer>
+</div>
+<script src="survival.js"></script>
+<script>
+(function(){
+"use strict";
+var S=window.Survival, D=S.DEFAULTS;
+var lang="ar";
+try{var sv=localStorage.getItem("surv_lang"); if(sv==="en"||sv==="ar") lang=sv;}catch(e){}
+
+var T={
+ kicker:{ar:"محاكي بقاء السيولة للمطور",en:"DEVELOPER CASH SURVIVAL"},
+ title:{ar:"هل المطوّر هيوصل للتسليم من غير ما يخلص كاش؟",en:"Will the developer reach delivery before the cash runs out?"},
+ sub:{ar:"آلاف السيناريوهات (مونت كارلو) لتضخم التشطيب وسرعة البيع ونسبة التحصيل — وبتطلع احتمال العجز قبل التسليم، وأنهي عامل بيأثر أكتر، وأطول فترة تقسيط ينفع تقدمها.",en:"Thousands of Monte Carlo paths over construction inflation, sales pace and collections — giving the probability of a cash shortfall before delivery, which driver matters most, and the longest installment term you can afford."},
+ warn:{ar:"أداة تعليمية للتخطيط بأرقام افتراضية وهمية وليست استشارة استثمارية أو مالية. النموذج مبسّط (لا ضرائب ولا قروض تفصيلية ولا إلغاء عقود). الأرقام بالمليون من أي عملة.",en:"Educational planning tool with fictional sample numbers; not investment or financial advice. The model is simplified (no taxes, detailed loans or contract cancellations). Money is in millions of any currency."},
+ inputs:{ar:"مدخلات المشروع",en:"PROJECT INPUTS"}, paths:{ar:"عدد السيناريوهات",en:"Simulated paths"}, seed:{ar:"بذرة العشوائية",en:"Random seed"},
+ target:{ar:"أقصى احتمال عجز مقبول %",en:"Max acceptable risk %"},
+ run:{ar:"شغّل المحاكاة",en:"Run simulation"}, reset:{ar:"رجّع الافتراضي",en:"Reset"},
+ pdf:{ar:"تقرير PDF",en:"PDF report"},
+ xray_in:{ar:"مقارنة خطط السداد (قيمة حالية)",en:"PAYMENT PLAN X-RAY"}, rate:{ar:"معدل الخصم السنوي %",en:"Annual discount rate %"},
+ addplan:{ar:"+ أضف خطة",en:"+ Add plan"},
+ verdict:{ar:"احتمال العجز قبل التسليم",en:"PROBABILITY OF SHORTFALL BEFORE DELIVERY"},
+ fan:{ar:"مروحة الكاش على مدار المشروع",en:"CASH FAN CHART"},
+ torn:{ar:"أكتر العوامل تأثيرا (±20%)",en:"WHAT MOVES THE RISK (±20%)"},
+ torn_h:{ar:"كل شريط = الفرق في احتمال العجز لما العامل يتغير 20% لأقل وأكتر. الأحمر = المخاطرة زادت، الأخضر = قلت.",en:"Each bar is the change in shortfall probability when the driver moves 20% down / up. Red = risk rises, green = risk falls."},
+ heat:{ar:"خريطة المخاطر: المقدم × مدة التقسيط",en:"RISK MAP: DOWN PAYMENT × TERM"},
+ heat_h:{ar:"كل خلية = احتمال العجز. الأخضر آمن، الأحمر خطر.",en:"Each cell is the shortfall probability. Green is safe, red is danger."},
+ xray:{ar:"أشعة على خطط السداد",en:"PAYMENT PLAN X-RAY"},
+ xray_h:{ar:"القيمة الحالية لكل خطة كنسبة من سعر الوحدة — الفرق هو الخصم الحقيقي اللي بتديه من غير ما تكتبه.",en:"Present value of each plan as a share of list price — the gap is the hidden discount you are giving."},
+ foot:{ar:"مفتوح المصدر (MIT). محرك بايثون هو المرجع والصفحة دي نسخة JS مطابقة له بالاختبارات. بيانات وهمية فقط.",en:"Open source (MIT). The Python engine is the reference; this page is a JS port verified against it by tests. Fictional data only."},
+ median:{ar:"وسيط الكاش عند التسليم",en:"Median cash at delivery"}, p5:{ar:"أسوأ 5%",en:"Worst 5%"}, p95:{ar:"أفضل 5%",en:"Best 5%"},
+ firstm:{ar:"أخطر شهر",en:"Riskiest month"}, defaults:{ar:"سيناريوهات عجز",en:"Shortfall paths"},
+ b90:{ar:"نطاق 90%",en:"90% band"}, b50:{ar:"نطاق 50%",en:"50% band"}, med:{ar:"الوسيط",en:"Median"}, line:{ar:"حد الائتمان",en:"Credit limit"},
+ month:{ar:"شهر",en:"month"},
+ safe:{ar:"آمن ضمن الحد اللي حددته.",en:"Within your risk limit."}, danger:{ar:"أعلى من الحد المقبول — غيّر الخطة أو زوّد السيولة.",en:"Above your limit — change the plan or add liquidity."},
+ maxterm:{ar:"أطول مدة تقسيط تحقق حد المخاطرة: ",en:"Longest term meeting your risk limit: "},
+ none:{ar:"لا توجد مدة مناسبة بالمقدم الحالي — ارفع المقدم أو السيولة.",en:"No term meets the limit at this down payment — raise the down payment or liquidity."},
+ months:{ar:"شهر",en:"months"}, planname:{ar:"الخطة",en:"Plan"}, dp:{ar:"مقدم %",en:"Down %"}, term:{ar:"شهور",en:"Months"}, grace:{ar:"سماح",en:"Grace"},
+ pv:{ar:"القيمة الحالية",en:"PV"}, share:{ar:"% من السعر",en:"% of price"}, hair:{ar:"خصم مخفي",en:"Hidden discount"},
+ running:{ar:"جاري الحساب…",en:"Computing…"}, bad:{ar:"مدخلات غير صالحة: ",en:"Invalid input: "}
+};
+var L={
+ months:{ar:"شهور حتى التسليم",en:"Months to delivery"}, units:{ar:"عدد الوحدات",en:"Units"}, price:{ar:"متوسط سعر الوحدة",en:"Avg unit price"},
+ down_pct:{ar:"مقدم (0–1)",en:"Down payment (0–1)"}, term:{ar:"شهور التقسيط",en:"Installment months"}, presold:{ar:"وحدات مباعة مسبقا",en:"Pre-sold units"},
+ velocity:{ar:"وحدات/شهر متوقعة",en:"Expected units/month"}, velocity_sd:{ar:"تذبذب سرعة البيع",en:"Sales pace volatility"},
+ budget:{ar:"ميزانية الإنشاء",en:"Construction budget"}, infl_mean:{ar:"تضخم تكلفة شهري",en:"Monthly cost inflation"}, infl_sd:{ar:"تذبذب التضخم",en:"Inflation volatility"},
+ opening_cash:{ar:"كاش افتتاحي",en:"Opening cash"}, overhead:{ar:"مصاريف ثابتة/شهر",en:"Monthly overhead"},
+ credit_line:{ar:"حد الائتمان المتاح",en:"Credit line"}, credit_rate:{ar:"فائدة شهرية على السحب",en:"Monthly interest on overdraft"},
+ collect_mean:{ar:"نسبة التحصيل (0–1)",en:"Collection rate (0–1)"}, collect_sd:{ar:"تذبذب التحصيل",en:"Collection volatility"}
+};
+var DRV={velocity:{ar:"سرعة البيع",en:"Sales pace"},budget:{ar:"ميزانية الإنشاء",en:"Construction budget"},infl_mean:{ar:"تضخم التكلفة",en:"Cost inflation"},
+ collect_mean:{ar:"نسبة التحصيل",en:"Collection rate"},price:{ar:"سعر الوحدة",en:"Unit price"},down_pct:{ar:"المقدم",en:"Down payment"},
+ opening_cash:{ar:"الكاش الافتتاحي",en:"Opening cash"},credit_line:{ar:"حد الائتمان",en:"Credit line"}};
+var ORDER=["months","units","price","down_pct","term","presold","velocity","velocity_sd","budget","infl_mean","infl_sd","opening_cash","overhead","credit_line","credit_rate","collect_mean","collect_sd"];
+var PLANS0=[{name:"10/90 × 60",down_pct:.1,term:60,grace:0},{name:"20/80 × 48",down_pct:.2,term:48,grace:0},{name:"30/70 × 24",down_pct:.3,term:24,grace:0},{name:"10/90 × 84 + 12",down_pct:.1,term:84,grace:12}];
+var plans=JSON.parse(JSON.stringify(PLANS0));
+var $=function(id){return document.getElementById(id)};
+function t(k){return T[k][lang]}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function f1(x){return (Math.round(x*10)/10).toFixed(1)}
+function pc(x,d){return (x*100).toFixed(d===undefined?1:d)+"%"}
+function ltr(s){return "<bdi dir='ltr'>"+esc(s)+"</bdi>"}
+
+function buildFields(){
+  var h="";
+  ORDER.forEach(function(k){h+="<div class='f'><span data-l='"+k+"'></span><input id='p_"+k+"' type='number' step='any' value='"+D[k]+"'></div>";});
+  $("fields").innerHTML=h;
+}
+function buildPlans(){
+  var h="<table><tr><th data-t='planname'></th><th data-t='dp'></th><th data-t='term'></th><th data-t='grace'></th><th></th></tr>";
+  plans.forEach(function(p,i){
+    h+="<tr><td><input class='pn' dir='ltr' data-i='"+i+"' value='"+esc(p.name)+"' style='width:100%;min-width:92px;background:#0b0f16;border:1px solid var(--line);color:var(--ink);padding:3px;border-radius:4px'></td>"+
+    ["down_pct","term","grace"].map(function(k){var v=k==="down_pct"?p[k]*100:p[k];return "<td><input class='pv' data-i='"+i+"' data-k='"+k+"' type='number' value='"+v+"' style='width:52px;background:#0b0f16;border:1px solid var(--line);color:var(--ink);padding:3px;border-radius:4px;font-family:var(--mono)'></td>"}).join("")+
+    "<td><button class='rm' data-i='"+i+"' style='padding:2px 8px'>×</button></td></tr>";});
+  $("plans").innerHTML=h+"</table>";
+  applyText();
+  Array.prototype.forEach.call(document.querySelectorAll(".pn"),function(e){e.oninput=function(){plans[e.dataset.i].name=e.value}});
+  Array.prototype.forEach.call(document.querySelectorAll(".pv"),function(e){e.oninput=function(){var v=Number(e.value);plans[e.dataset.i][e.dataset.k]=e.dataset.k==="down_pct"?v/100:v}});
+  Array.prototype.forEach.call(document.querySelectorAll(".rm"),function(e){e.onclick=function(){plans.splice(Number(e.dataset.i),1);buildPlans();renderXray()}});
+}
+function applyText(){
+  document.documentElement.lang=lang; document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+  $("lang").textContent=lang==="ar"?"EN":"عربي";
+  var map={t_kicker:"kicker",t_title:"title",t_sub:"sub",t_warn:"warn",t_inputs:"inputs",t_paths:"paths",t_seed:"seed",t_target:"target",run:"run",reset:"reset",pdf:"pdf",
+   t_xray_in:"xray_in",t_rate:"rate",addplan:"addplan",t_verdict:"verdict",t_fan:"fan",t_torn:"torn",t_torn_h:"torn_h",t_heat:"heat",t_heat_h:"heat_h",t_xray:"xray",t_xray_h:"xray_h",t_foot:"foot",
+   l_b90:"b90",l_b50:"b50",l_med:"med",l_line:"line"};
+  Object.keys(map).forEach(function(id){$(id).textContent=t(map[id])});
+  Array.prototype.forEach.call(document.querySelectorAll("[data-l]"),function(e){e.textContent=L[e.dataset.l][lang]});
+  Array.prototype.forEach.call(document.querySelectorAll("[data-t]"),function(e){e.textContent=t(e.dataset.t)});
+  document.title=lang==="ar"?"محاكي بقاء السيولة للمطور":"Developer Cashflow Survival Simulator";
+}
+function readParams(){
+  var p={};
+  ORDER.forEach(function(k){p[k]=Number($("p_"+k).value)});
+  return S.paramsFrom(p);
+}
+var last=null;
+
+function run(){
+  $("err").textContent="";
+  var p;
+  try{p=readParams()}catch(e){$("err").textContent=t("bad")+e.message;return}
+  var paths=Math.max(100,Math.min(20000,Math.trunc(Number($("paths").value)||2000)));
+  var seed=Math.trunc(Number($("seed").value)||1);
+  var target=(Number($("target").value)||10)/100;
+  $("out").classList.add("busy"); $("pbig").textContent="…";
+  setTimeout(function(){
+    try{
+      var sim=S.simulate(p,paths,seed,true);
+      var torn=S.tornado(p,Math.min(paths,1000),seed,0.2);
+      var dps=[0.05,0.10,0.15,0.20,0.30,0.40,0.50];
+      var terms=[12,24,36,48,60,84,120];
+      var heat=S.heatmap(p,dps,terms,Math.min(paths,300),seed);
+      var tl=[]; for(var k=6;k<=120;k+=6) tl.push(k);
+      var mt=S.maxTerm(p,target,tl,Math.min(paths,300),seed);
+      last={p:p,sim:sim,torn:torn,heat:heat,mt:mt,target:target};
+      render();
+    }catch(e){$("err").textContent=t("bad")+e.message}
+    $("out").classList.remove("busy");
+  },30);
+}
+
+function render(){
+  if(!last) return;
+  var sim=last.sim,p=last.p,pr=sim.default_prob;
+  var cls=pr<=last.target?"low":pr<=last.target*2.5?"mid":"high";
+  $("pbig").className="big "+cls; $("pbig").textContent=pc(pr,1);
+  $("pverd").textContent=pr<=last.target?t("safe"):t("danger");
+  var worst=0,wi=0; sim.first_breach_hist.forEach(function(c,i){if(c>worst){worst=c;wi=i}});
+  var fc=sim.final_cash;
+  $("kv").innerHTML=[[t("median"),f1(fc["0.5"])],[t("p5"),f1(fc["0.05"])],[t("p95"),f1(fc["0.95"])],[t("defaults"),sim.defaults+" / "+sim.paths],[t("firstm"),worst?String(wi):"–"]]
+   .map(function(r){return "<div><b>"+esc(r[1])+"</b><span>"+esc(r[0])+"</span></div>"}).join("");
+  drawFan(sim,p); drawTorn(last.torn); drawHeat(last.heat); renderMax(); renderXray();
+}
+
+function drawFan(sim,p){
+  var W=760,H=300,ml=46,mr=12,mt=10,mb=26,D=p.months,F=sim.fan;
+  var lo=Math.min(-p.credit_line*1.1,Math.min.apply(null,F["0.05"])), hi=Math.max.apply(null,F["0.95"]);
+  if(hi<=lo) hi=lo+1;
+  function X(i){return ml+(W-ml-mr)*i/D}
+  function Y(v){return mt+(H-mt-mb)*(1-(v-lo)/(hi-lo))}
+  function area(a,b,col){var d="M";for(var i=0;i<=D;i++)d+=X(i)+","+Y(b[i])+" L";for(i=D;i>=0;i--)d+=X(i)+","+Y(a[i])+(i?" L":"");return "<path d='"+d+" Z' fill='"+col+"'/>"}
+  function line(a,col,w){var d="";for(var i=0;i<=D;i++)d+=(i?" L":"M")+X(i)+","+Y(a[i]);return "<path d='"+d+"' fill='none' stroke='"+col+"' stroke-width='"+w+"'/>"}
+  var s="";
+  for(var g=0;g<=4;g++){var v=lo+(hi-lo)*g/4;s+="<line x1='"+ml+"' x2='"+(W-mr)+"' y1='"+Y(v)+"' y2='"+Y(v)+"' stroke='#243044' stroke-dasharray='2 4'/><text x='"+(ml-6)+"' y='"+(Y(v)+4)+"' text-anchor='end'>"+Math.round(v)+"</text>";}
+  s+=area(F["0.05"],F["0.95"],"rgba(74,163,255,.18)")+area(F["0.25"],F["0.75"],"rgba(74,163,255,.38)")+line(F["0.5"],"#ffb020",2.2);
+  s+="<line x1='"+ml+"' x2='"+(W-mr)+"' y1='"+Y(-p.credit_line)+"' y2='"+Y(-p.credit_line)+"' stroke='#ff4d4d' stroke-width='1.6' stroke-dasharray='6 4'/>";
+  if(lo<0&&hi>0) s+="<line x1='"+ml+"' x2='"+(W-mr)+"' y1='"+Y(0)+"' y2='"+Y(0)+"' stroke='#5b6a85'/>";
+  for(var m=0;m<=D;m+=Math.max(1,Math.round(D/9))) s+="<text x='"+X(m)+"' y='"+(H-8)+"' text-anchor='middle'>"+m+"</text>";
+  $("fan").innerHTML=s;
+}
+
+function drawTorn(tn){
+  var rows=tn.rows,W=760,rowH=32,top=14,mid=380,sc=Math.max(0.01,Math.max.apply(null,rows.map(function(r){return Math.max(Math.abs(r.p_low-tn.base),Math.abs(r.p_high-tn.base))})));
+  var half=250,s="";
+  function bar(delta,col,y){var w=Math.abs(delta)/sc*half;var x=delta>=0?mid:mid-w;return "<rect x='"+x+"' y='"+y+"' width='"+Math.max(w,1)+"' height='"+(rowH-12)+"' rx='3' fill='"+col+"'/>"}
+  rows.forEach(function(r,i){
+    var y=top+i*rowH;
+    s+="<text x='8' y='"+(y+13)+"' style='fill:var(--ink);font-family:var(--sans);font-size:12px'>"+esc(DRV[r.driver][lang])+"</text>";
+    function cc(d){return d>0?"#ff4d4d":"#35d08a"}
+    s+=bar(r.p_low-tn.base,cc(r.p_low-tn.base),y)+bar(r.p_high-tn.base,cc(r.p_high-tn.base),y);
+    s+="<text x='"+(W-6)+"' y='"+(y+13)+"' text-anchor='end'>"+pc(r.p_low,0)+" → "+pc(r.p_high,0)+"</text>";
+  });
+  s+="<line x1='"+mid+"' x2='"+mid+"' y1='4' y2='"+(top+rows.length*rowH)+"' stroke='#8794ab'/>";
+  $("torn").setAttribute("viewBox","0 0 760 "+(top+rows.length*rowH+8)); $("torn").innerHTML=s;
+}
+
+function heatCol(v){ // green -> amber -> red
+  var h=v<=0.5?120-v*2*80:40-(v-0.5)*2*40; return "hsl("+h+",70%,55%)";
+}
+function drawHeat(h){
+  var s="<table class='heat'><tr><th></th>"+h.terms.map(function(k){return "<th class='n'>"+k+" "+t("months")+"</th>"}).join("")+"</tr>";
+  h.grid.forEach(function(row,i){s+="<tr><th class='n'>"+Math.round(h.down_pcts[i]*100)+"%</th>"+row.map(function(v){return "<td style='background:"+heatCol(v)+"'>"+pc(v,0)+"</td>"}).join("")+"</tr>"});
+  $("heat").innerHTML=s+"</table>";
+}
+function renderMax(){
+  var m=last.mt, p=last.p;
+  $("maxterm").innerHTML=m.best_term?"<b>"+esc(t("maxterm"))+"</b> "+ltr(m.best_term+" "+t("months"))+" @ "+ltr(Math.round(p.down_pct*100)+"%")+" · "+ltr("≤ "+pc(last.target,0)):"<b>"+esc(t("none"))+"</b>";
+}
+function renderXray(){
+  var rate=(Number($("rate").value)||0)/100, price=last?last.p.price:D.price, r;
+  try{r=S.planXray(price,rate,plans)}catch(e){$("xray").innerHTML="<div class='err'>"+esc(e.message)+"</div>";return}
+  var s="<table><tr><th>"+t("planname")+"</th><th class='n'>"+t("pv")+"</th><th class='n'>"+t("share")+"</th><th class='n'>"+t("hair")+"</th></tr>";
+  r.rows.forEach(function(x){var col=x.haircut>0.25?"var(--red)":x.haircut>0.12?"var(--amber)":"var(--green)";
+    s+="<tr><td><bdi dir='ltr'>"+esc(x.name)+"</bdi></td><td class='n'>"+x.pv.toFixed(2)+"</td><td class='n'>"+pc(x.pv_share,1)+"</td><td class='n' style='color:"+col+"'>"+pc(x.haircut,1)+"</td></tr>"});
+  $("xray").innerHTML=s+"</table>";
+}
+
+$("run").onclick=run;
+$("reset").onclick=function(){ORDER.forEach(function(k){$("p_"+k).value=D[k]});plans=JSON.parse(JSON.stringify(PLANS0));buildPlans();run()};
+$("lang").onclick=function(){lang=lang==="ar"?"en":"ar";try{localStorage.setItem("surv_lang",lang)}catch(e){}applyText();buildPlans();render()};
+$("addplan").onclick=function(){plans.push({name:"new",down_pct:.15,term:36,grace:0});buildPlans();renderXray()};
+$("rate").oninput=renderXray;
+var oldTitle;
+$("pdf").onclick=function(){oldTitle=document.title;document.title="survival-report-"+new Date().toISOString().slice(0,10);window.print()};
+window.addEventListener("afterprint",function(){if(oldTitle) document.title=oldTitle});
+
+buildFields(); buildPlans(); applyText(); run();
+})();
+</script>
+</body>
+</html>
