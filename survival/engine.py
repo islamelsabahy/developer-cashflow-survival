@@ -12,6 +12,7 @@ Design notes (the JS port in docs/survival.js must match this file):
     collection (three draws), whether or not the path already defaulted.
   * Money is in "millions" of any currency; this is a planning model, not accounting.
 """
+import math
 from dataclasses import dataclass, asdict, fields
 
 M32 = 0xFFFFFFFF
@@ -164,7 +165,7 @@ def run_path(p, rnd, weights):
         mean = float(p.velocity) * vf
         n = 0
         if left > 0 and mean > 0.0:
-            n = int(_round_half_up(mean + (mean ** 0.5) * zs))
+            n = int(_round_half_up(mean + math.sqrt(mean) * zs))
             if n > left:
                 n = left
         left -= n
@@ -192,6 +193,14 @@ def run_path(p, rnd, weights):
 
 
 # ---------------------------------------------------------------- aggregation
+
+def _plain_sum(xs):
+    """Left-to-right float sum (Python 3.12 changed sum() to compensated summation)."""
+    acc = 0.0
+    for x in xs:
+        acc += x
+    return acc
+
 
 def _pct(sorted_vals, q):
     return sorted_vals[int(q * (len(sorted_vals) - 1))]
@@ -230,7 +239,7 @@ def simulate(params, paths=2000, seed=1, fan=True):
         "defaults": defaults,
         "first_breach_hist": hist,
         "final_cash": {str(q): _pct(finals_sorted, q) for q in QUANTILES},
-        "final_cash_mean": sum(finals) / paths,
+        "final_cash_mean": _plain_sum(finals) / paths,
     }
     if fan:
         fan_out = {}
