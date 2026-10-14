@@ -20,11 +20,12 @@ button:hover{border-color:var(--amber)}
 button.go{background:var(--amber);color:#1a1200;border-color:var(--amber)}
 .tools{display:flex;gap:8px;flex-wrap:wrap}
 .warn{margin:14px 0;padding:10px 14px;border:1px dashed #6b5a2a;background:#1a1608;color:#e9d9a6;border-radius:6px;font-size:.85rem}
-.grid{display:grid;grid-template-columns:330px 1fr;gap:18px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:330px minmax(0,1fr);gap:18px}
+.grid>*{min-width:0}
+@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:16px}
 .card h2{margin:0 0 10px;font:600 .78rem var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
-.f{display:grid;grid-template-columns:1fr 104px;gap:8px;align-items:center;margin:6px 0;font-size:.88rem}
+.f{display:grid;grid-template-columns:minmax(0,1fr) 104px;gap:8px;align-items:center;margin:6px 0;font-size:.88rem}
 .f input{width:100%;background:#0b0f16;border:1px solid var(--line);color:var(--ink);padding:5px 7px;border-radius:5px;font:.88rem var(--mono);direction:ltr;text-align:right}
 .f input:focus{outline:1px solid var(--amber)}
 .hint{color:var(--dim);font-size:.75rem}
@@ -78,6 +79,13 @@ bdi{unicode-bidi:isolate}
 .pgrid label{display:flex;flex-direction:column;gap:2px;font-size:.7rem;color:var(--dim)}
 .pgrid input,.pgrid select,.prow input{background:#0b0f16;border:1px solid var(--line);color:var(--ink);padding:4px;border-radius:4px;font:.82rem var(--mono);width:100%;min-width:0}
 #heat{overflow-x:auto}
+.lb{display:block;min-width:0;overflow-wrap:anywhere}.lb b{font-weight:600}
+.un{display:block;font:.68rem var(--mono);color:var(--blue);margin-top:1px}
+.q{font:700 .72rem var(--sans);width:18px;height:18px;line-height:14px;padding:0;margin-inline:5px;border-radius:50%;border:1.5px solid var(--blue);background:transparent;color:var(--blue);vertical-align:middle;cursor:help}
+.q:hover,.q:focus{background:var(--blue);color:#0b0e13;outline:none}
+.grp>h3 .q,th .q{margin-inline:3px}
+.tip{position:absolute;z-index:50;background:#0b0f16;color:var(--ink);border:1px solid var(--amber);font:400 .8rem/1.5 var(--sans);padding:8px 10px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.5);pointer-events:none;white-space:normal;text-align:start;text-transform:none;letter-spacing:0}
+@media print{.q,.tip{display:none!important}}
 .heat td.na{background:#243044;color:var(--dim)}
 @media print{
  :root{--bg:#fff;--panel:#fff;--line:#bbb;--ink:#111;--dim:#555}
@@ -109,14 +117,14 @@ bdi{unicode-bidi:isolate}
     <div class="card" id="c_pricing"></div>
     <div class="card" id="c_plan"></div>
     <div class="card"><h2 id="t_inputs"></h2><div id="fields"></div>
-      <div class="f"><span id="t_paths"></span><input id="paths" type="number" value="2000" min="100" max="20000"></div>
-      <div class="f"><span id="t_seed"></span><input id="seed" type="number" value="7"></div>
-      <div class="f"><span id="t_target"></span><input id="target" type="number" value="10" min="0" max="100"></div>
+      <div class="f"><span class="lb"><b id="t_paths"></b><button type="button" class="q" data-h="paths"></button><small class="un" data-u="paths"></small></span><input id="paths" type="number" value="2000" min="100" max="20000"></div>
+      <div class="f"><span class="lb"><b id="t_seed"></b><button type="button" class="q" data-h="seed"></button><small class="un" data-u="seed"></small></span><input id="seed" type="number" value="7"></div>
+      <div class="f"><span class="lb"><b id="t_target"></b><button type="button" class="q" data-h="target"></button><small class="un" data-u="target"></small></span><input id="target" type="number" value="10" min="0" max="100"></div>
       <div id="runrow" style="margin-top:10px;display:flex;gap:8px"><button class="go" id="run"></button><button id="reset"></button></div>
       <div class="err" id="err"></div>
     </div>
     <div class="card"><h2 id="t_xray_in"></h2>
-      <div class="f"><span id="t_rate"></span><input id="rate" type="number" value="27"></div>
+      <div class="f"><span class="lb"><b id="t_rate"></b><button type="button" class="q" data-h="rate"></button><small class="un" data-u="rate"></small></span><input id="rate" type="number" value="27"></div>
       <div id="plans"></div>
       <button id="addplan" style="margin-top:6px"></button>
     </div>
@@ -153,10 +161,10 @@ var T={
  sub:{ar:"آلاف السيناريوهات (مونت كارلو) لتضخم التشطيب وسرعة البيع ونسبة التحصيل — وبتطلع احتمال العجز قبل التسليم، وأنهي عامل بيأثر أكتر، وأطول فترة تقسيط ينفع تقدمها.",en:"Thousands of Monte Carlo paths over construction inflation, sales pace and collections — giving the probability of a cash shortfall before delivery, which driver matters most, and the longest installment term you can afford."},
  warn:{ar:"أداة تعليمية للتخطيط بأرقام افتراضية وهمية وليست استشارة استثمارية أو مالية. النموذج مبسّط (لا ضرائب ولا قروض تفصيلية ولا إلغاء عقود). الأرقام بالمليون من أي عملة.",en:"Educational planning tool with fictional sample numbers; not investment or financial advice. The model is simplified (no taxes, detailed loans or contract cancellations). Money is in millions of any currency."},
  inputs:{ar:"مدخلات المشروع",en:"PROJECT INPUTS"}, paths:{ar:"عدد السيناريوهات",en:"Simulated paths"}, seed:{ar:"بذرة العشوائية",en:"Random seed"},
- target:{ar:"أقصى احتمال عجز مقبول %",en:"Max acceptable risk %"},
+ target:{ar:"أقصى احتمال عجز مقبول",en:"Max acceptable risk"},
  run:{ar:"شغّل المحاكاة",en:"Run simulation"}, reset:{ar:"رجّع الافتراضي",en:"Reset"},
  pdf:{ar:"تقرير PDF",en:"PDF report"},
- xray_in:{ar:"مقارنة خطط السداد (قيمة حالية)",en:"PAYMENT PLAN X-RAY"}, rate:{ar:"معدل الخصم السنوي %",en:"Annual discount rate %"},
+ xray_in:{ar:"مقارنة خطط السداد (قيمة حالية)",en:"PAYMENT PLAN X-RAY"}, rate:{ar:"معدل الخصم السنوي",en:"Annual discount rate"},
  addplan:{ar:"+ أضف خطة",en:"+ Add plan"},
  verdict:{ar:"احتمال العجز قبل التسليم",en:"PROBABILITY OF SHORTFALL BEFORE DELIVERY"},
  fan:{ar:"مروحة الكاش على مدار المشروع",en:"CASH FAN CHART"},
@@ -177,25 +185,25 @@ var T={
  months:{ar:"شهر",en:"months"}, planname:{ar:"الخطة",en:"Plan"}, dp:{ar:"مقدم %",en:"Down %"}, term:{ar:"شهور",en:"Months"}, grace:{ar:"سماح",en:"Grace"},
  pv:{ar:"القيمة الحالية",en:"PV"}, share:{ar:"% من السعر",en:"% of price"}, hair:{ar:"خصم مخفي",en:"Hidden discount"},
  running:{ar:"جاري الحساب…",en:"Computing…"}, bad:{ar:"مدخلات غير صالحة: ",en:"Invalid input: "},
- pricing:{ar:"الوحدة والتسعير",en:"UNIT & PRICING"}, area:{ar:"متوسط مساحة الوحدة (م²)",en:"Avg unit area (m²)"},
+ pricing:{ar:"الوحدة والتسعير",en:"UNIT & PRICING"}, area:{ar:"متوسط مساحة الوحدة",en:"Avg unit area"},
  basis:{ar:"أساس التسعير (اختار واحد)",en:"Pricing basis (choose one)"},
  basis_m2:{ar:"سعر المتر × المساحة",en:"Price per m² × area"}, basis_unit:{ar:"سعر وحدة ثابت",en:"Fixed unit price"},
- price_m2:{ar:"سعر المتر (جنيه/م²)",en:"Price per m² (EGP)"}, price_unit:{ar:"سعر الوحدة (مليون)",en:"Unit price (million)"},
+ price_m2:{ar:"سعر المتر",en:"Price per m²"}, price_unit:{ar:"سعر الوحدة",en:"Unit price"},
  policy:{ar:"سياسة السعر (اختار واحد)",en:"Price policy (choose one)"},
  pol_lock:{ar:"سعر ثابت طول المشروع",en:"Locked price"}, pol_esc:{ar:"زيادة سنوية على المبيعات الجديدة",en:"Annual increase on new sales"},
- growth:{ar:"نسبة الزيادة السنوية %",en:"Annual increase %"},
+ growth:{ar:"نسبة الزيادة السنوية",en:"Annual increase"},
  derived:{ar:"أرقام الوحدة المحسوبة",en:"Derived unit economics"},
  d_unit:{ar:"سعر الوحدة (مليون)",en:"Unit price (million)"}, d_m2:{ar:"سعر المتر (جنيه)",en:"Price per m² (EGP)"},
  d_area:{ar:"إجمالي المساحة المباعة (م²)",en:"Total sellable area (m²)"}, d_gdv:{ar:"إجمالي قيمة المبيعات (مليون)",en:"Total sales value (million)"},
  d_cost:{ar:"تكلفة المتر (جنيه)",en:"Construction cost per m² (EGP)"}, d_margin:{ar:"هامش المتر (جنيه)",en:"Margin per m² (EGP)"},
  d_be:{ar:"سعر المتر للتعادل شامل المصاريف",en:"Break-even price per m² incl. overhead"}, d_gm:{ar:"هامش إجمالي %",en:"Gross margin %"},
- planh:{ar:"خطة السداد",en:"PAYMENT PLAN"}, down:{ar:"مقدم %",en:"Down payment %"}, termm:{ar:"مدة التقسيط (شهور)",en:"Installment months"},
+ planh:{ar:"خطة السداد",en:"PAYMENT PLAN"}, down:{ar:"مقدم",en:"Down payment"}, termm:{ar:"مدة التقسيط",en:"Installment period"},
  freq:{ar:"دورية القسط (اختار واحد)",en:"Installment frequency (choose one)"},
  f1:{ar:"شهري",en:"Monthly"}, f3:{ar:"ربع سنوي",en:"Quarterly"}, f6:{ar:"نصف سنوي",en:"Semi-annual"}, f12:{ar:"سنوي",en:"Annual"},
- c_dl:{ar:"دفعة استلام",en:"Delivery payment"}, p_dl:{ar:"% من السعر",en:"% of price"},
- c_bl:{ar:"دفعات سنوية إضافية",en:"Extra yearly payments"}, p_bl:{ar:"% من السعر (موزعة سنوياً)",en:"% of price (spread yearly)"},
- c_cash:{ar:"مشترين كاش بخصم",en:"Cash buyers with discount"}, p_cs:{ar:"نسبة المشترين الكاش %",en:"Share of cash buyers %"}, p_cd:{ar:"خصم الكاش %",en:"Cash discount %"},
- c_mt:{ar:"وديعة صيانة (فوق السعر)",en:"Maintenance deposit (on top of price)"}, p_mp:{ar:"% من السعر عند الاستلام",en:"% of price at delivery"},
+ c_dl:{ar:"دفعة استلام",en:"Delivery payment"}, p_dl:{ar:"قيمة دفعة الاستلام",en:"Delivery payment amount"},
+ c_bl:{ar:"دفعات سنوية إضافية",en:"Extra yearly payments"}, p_bl:{ar:"إجمالي الدفعات السنوية",en:"Total yearly payments"},
+ c_cash:{ar:"مشترين كاش بخصم",en:"Cash buyers with discount"}, p_cs:{ar:"نسبة المشترين الكاش",en:"Share of cash buyers"}, p_cd:{ar:"خصم الكاش",en:"Cash discount"},
+ c_mt:{ar:"وديعة صيانة (فوق السعر)",en:"Maintenance deposit (on top of price)"}, p_mp:{ar:"قيمة الوديعة",en:"Deposit amount"},
  mt_escrow:{ar:"تتحجز (مش سيولة للمطور)",en:"Held in escrow (not developer cash)"}, mt_count:{ar:"تُحسب سيولة للمطور",en:"Counted as developer cash"},
  conf_bl_year:{ar:"الدفعات السنوية متعارضة مع القسط السنوي، فاتقفلت. اختار واحد منهم.",en:"Yearly payments conflict with yearly installments, so they are switched off. Choose one."},
  conf_bl_term:{ar:"الدفعات السنوية محتاجة مدة 12 شهر على الأقل، فاتقفلت.",en:"Yearly payments need a term of at least 12 months, so they are switched off."},
@@ -208,17 +216,107 @@ var T={
  dm:{ar:"شهر الاستلام",en:"Delivery month"}, dlp:{ar:"استلام %",en:"Delivery %"}, fq:{ar:"الدورية",en:"Frequency"}
 };
 var L={
- months:{ar:"شهور حتى التسليم",en:"Months to delivery"}, units:{ar:"عدد الوحدات",en:"Units"}, price:{ar:"متوسط سعر الوحدة",en:"Avg unit price"},
+ months:{ar:"المدة حتى التسليم",en:"Time to delivery"}, units:{ar:"عدد الوحدات",en:"Units"}, price:{ar:"متوسط سعر الوحدة",en:"Avg unit price"},
  down_pct:{ar:"مقدم (0–1)",en:"Down payment (0–1)"}, term:{ar:"شهور التقسيط",en:"Installment months"}, presold:{ar:"وحدات مباعة مسبقا",en:"Pre-sold units"},
- velocity:{ar:"وحدات/شهر متوقعة",en:"Expected units/month"}, velocity_sd:{ar:"تذبذب سرعة البيع",en:"Sales pace volatility"},
- budget:{ar:"ميزانية الإنشاء",en:"Construction budget"}, infl_mean:{ar:"تضخم تكلفة شهري",en:"Monthly cost inflation"}, infl_sd:{ar:"تذبذب التضخم",en:"Inflation volatility"},
- opening_cash:{ar:"كاش افتتاحي",en:"Opening cash"}, overhead:{ar:"مصاريف ثابتة/شهر",en:"Monthly overhead"},
- credit_line:{ar:"حد الائتمان المتاح",en:"Credit line"}, credit_rate:{ar:"فائدة شهرية على السحب",en:"Monthly interest on overdraft"},
- collect_mean:{ar:"نسبة التحصيل (0–1)",en:"Collection rate (0–1)"}, collect_sd:{ar:"تذبذب التحصيل",en:"Collection volatility"}
+ velocity:{ar:"سرعة البيع المتوقعة",en:"Expected sales pace"}, velocity_sd:{ar:"تذبذب سرعة البيع",en:"Sales pace volatility"},
+ budget:{ar:"ميزانية الإنشاء",en:"Construction budget"}, infl_mean:{ar:"تضخم التكلفة",en:"Cost inflation"}, infl_sd:{ar:"تذبذب التضخم",en:"Inflation volatility"},
+ opening_cash:{ar:"كاش افتتاحي",en:"Opening cash"}, overhead:{ar:"مصاريف ثابتة",en:"Fixed overhead"},
+ credit_line:{ar:"حد الائتمان المتاح",en:"Credit line"}, credit_rate:{ar:"فائدة على السحب",en:"Interest on overdraft"},
+ collect_mean:{ar:"نسبة التحصيل",en:"Collection rate"}, collect_sd:{ar:"تذبذب التحصيل",en:"Collection volatility"}
 };
 var DRV={velocity:{ar:"سرعة البيع",en:"Sales pace"},budget:{ar:"ميزانية الإنشاء",en:"Construction budget"},infl_mean:{ar:"تضخم التكلفة",en:"Cost inflation"},
  collect_mean:{ar:"نسبة التحصيل",en:"Collection rate"},price:{ar:"سعر الوحدة",en:"Unit price"},down_pct:{ar:"المقدم",en:"Down payment"},
  opening_cash:{ar:"الكاش الافتتاحي",en:"Opening cash"},credit_line:{ar:"حد الائتمان",en:"Credit line"}};
+var UNIT={
+ months:["شهر","months"], units:["وحدة","units"], presold:["وحدة (من إجمالي الوحدات)","units (out of total)"], velocity:["وحدة / شهر","units / month"],
+ velocity_sd:["نسبة (0.35 = ±35% من السرعة)","ratio (0.35 = ±35% of pace)"], budget:["مليون جنيه","EGP million"],
+ infl_mean:["كسر شهري (0.012 = 1.2% شهريا)","monthly fraction (0.012 = 1.2%/month)"], infl_sd:["كسر شهري (0.01 = 1%)","monthly fraction (0.01 = 1%)"],
+ opening_cash:["مليون جنيه","EGP million"], overhead:["مليون جنيه / شهر","EGP million / month"], credit_line:["مليون جنيه","EGP million"],
+ credit_rate:["كسر شهري (0.02 = 2% شهريا)","monthly fraction (0.02 = 2%/month)"], collect_mean:["نسبة من 0 إلى 1 (0.93 = 93%)","0 to 1 (0.93 = 93%)"], collect_sd:["نسبة (0.05 = ±5 نقط)","ratio (0.05 = ±5 points)"],
+ paths:["سيناريو","paths"], seed:["رقم صحيح","integer"], target:["% احتمال","% probability"], rate:["% في السنة","% per year"],
+ area:["م²","m²"], price_m2:["جنيه / م²","EGP / m²"], price_unit:["مليون جنيه","EGP million"], growth:["% في السنة","% per year"],
+ down:["% من السعر","% of price"], termm:["شهر","months"], p_dl:["% من السعر","% of price"], p_bl:["% من السعر (موزعة على السنين)","% of price (spread over the years)"],
+ p_cs:["% من المبيعات","% of sales"], p_cd:["% خصم من السعر","% off the price"], p_mp:["% من السعر (فوق السعر)","% of price (on top)"]
+};
+var HELP={
+ months:["عدد الشهور من النهارده لحد تسليم المشروع. المحاكاة بتتابع الكاش شهر بشهر لحد التسليم.","Months from today until project delivery. The simulation tracks cash month by month until then."],
+ units:["إجمالي عدد الوحدات اللي هتتباع في المشروع.","Total number of units to be sold in the project."],
+ presold:["وحدات اتباعت فعلاً قبل بداية المحاكاة، وأقساطها داخلة من الشهر الأول.","Units already sold before the simulation starts; their instalments flow from month one."],
+ velocity:["متوسط عدد الوحدات اللي متوقع تتباع كل شهر.","Expected average number of units sold each month."],
+ velocity_sd:["مدى عدم التأكد في سرعة البيع. 0.35 يعني السرعة الفعلية ممكن تبعد عن المتوقع بحوالي 35% في أي اتجاه.","Uncertainty of sales pace. 0.35 means the real pace can differ from the expected one by about 35% either way."],
+ budget:["ميزانية الإنشاء الكلية بأسعار النهارده، بالمليون. بتتصرف على منحنى S وبتتأثر بتضخم التكلفة.","Total construction budget in today's money, in millions. It is spent on an S-curve and affected by cost inflation."],
+ infl_mean:["متوسط زيادة تكلفة الإنشاء كل شهر. اكتبها كرقم عشري: 0.012 يعني 1.2% في الشهر (حوالي 15% في السنة).","Average monthly rise in construction cost. Enter a decimal: 0.012 means 1.2% per month (about 15% a year)."],
+ infl_sd:["تذبذب التضخم من شهر للتاني. أعلى = تكلفة أقل توقعاً.","Month-to-month volatility of inflation. Higher means less predictable costs."],
+ opening_cash:["الكاش المتاح معاك في الشهر صفر، بالمليون.","Cash you hold at month zero, in millions."],
+ overhead:["مصاريف الشركة الثابتة كل شهر (مرتبات، إيجار، ...) بالمليون.","Fixed company costs each month (salaries, rent, ...), in millions."],
+ credit_line:["أقصى رصيد سالب تتحمله من البنك. لو الكاش نزل تحت سالب الرقم ده يتحسب عجز.","The most negative balance the bank will tolerate. If cash falls below minus this number, it counts as a shortfall."],
+ credit_rate:["الفايدة الشهرية على الكاش السالب. اكتبها عشري: 0.02 يعني 2% في الشهر.","Monthly interest on negative cash. Enter a decimal: 0.02 means 2% per month."],
+ collect_mean:["نسبة الأقساط المستحقة اللي بتتحصل فعلاً. 0.93 يعني 93%، والباقي بيتأخر أو بيتعثر.","Share of due instalments actually collected. 0.93 means 93%; the rest is late or lost."],
+ collect_sd:["تذبذب نسبة التحصيل من شهر للتاني.","Month-to-month volatility of the collection rate."],
+ paths:["عدد السيناريوهات العشوائية اللي بتتحسب. أكتر = نتيجة أدق وأبطأ شوية.","How many random scenarios are simulated. More means a steadier result but slightly slower."],
+ seed:["رقم بيثبّت العشوائية: نفس الرقم بيدي نفس النتيجة بالظبط، تقدر تغيره عشان تختبر الثبات.","A number that fixes the randomness: the same number gives exactly the same result; change it to test stability."],
+ target:["أقصى احتمال عجز تقبله. تحت الرقم ده الخطة آمنة، فوقه الأداة بتحذرك وبتحسب أطول مدة تقسيط ممكنة.","The highest shortfall probability you accept. Below it the plan is safe; above it the tool warns you and finds the longest affordable term."],
+ rate:["معدل الخصم اللي بتقارن بيه خطط السداد: كل ما زاد، كل ما التقسيط الطويل بيكلفك خصم أكبر.","Discount rate used to compare payment plans: the higher it is, the more a long plan costs you in hidden discount."],
+ area:["متوسط مساحة الوحدة بالمتر المربع. بتستخدم مع سعر المتر لحساب سعر الوحدة.","Average unit area in m². Used with the price per m² to get the unit price."],
+ basis:["اختار تسعر بسعر المتر × المساحة، أو بسعر وحدة ثابت. الاتنين مينفعش مع بعض، فالحقل التاني بيبقى للقراءة بس.","Price by m² × area, or by a fixed unit price. They cannot both drive the price, so the other field becomes read-only."],
+ price_m2:["سعر بيع المتر الواحد بالجنيه. بيتضرب في المساحة لحساب سعر الوحدة.","Sale price of one m² in EGP. Multiplied by the area to get the unit price."],
+ price_unit:["سعر الوحدة بالمليون جنيه لو بتسعر بوحدة ثابتة.","Unit price in EGP millions when pricing by a fixed unit."],
+ policy:["سعر ثابت طول المشروع، ولا بيزيد سنويا على المبيعات الجديدة (الأقدم بيفضل بسعره).","Locked price for the whole project, or yearly increases applied to new sales only (older sales keep their price)."],
+ growth:["نسبة زيادة السعر كل سنة على المبيعات الجديدة، بالنسبة المئوية.","Yearly price increase on new sales, in percent."],
+ down:["اللي العميل بيدفعه عند التعاقد كنسبة من سعر الوحدة.","What the customer pays at contract, as a percentage of the unit price."],
+ termm:["المدة اللي بتتوزع عليها الأقساط بالشهور. 96 يعني 8 سنين. اكتب شهور مش سنين.","The period over which instalments are spread, in months. 96 means 8 years. Enter months, not years."],
+ freq:["كل قد إيه بيتدفع القسط: شهري أو ربع سنوي أو نصف سنوي أو سنوي. اختار واحد. القسط السنوي مينفعش معاه دفعات سنوية إضافية.","How often an instalment is paid: monthly, quarterly, semi-annual or annual. Choose one. Annual instalments cannot be combined with extra yearly payments."],
+ c_dl:["دفعة بيدفعها العميل وقت الاستلام. بتتحسب من السعر وبتنقص من الأقساط.","A payment the customer makes at handover. Taken from the price and deducted from the instalments."],
+ p_dl:["نسبة دفعة الاستلام من سعر الوحدة.","Handover payment as a percentage of the unit price."],
+ c_bl:["دفعة إضافية كل سنة (زي الدفعات السنوية في العقود المصرية) بجانب الأقساط. مينفعش مع القسط السنوي ولا مدة أقل من 12 شهر.","An extra payment each year (like Egyptian yearly instalments) on top of regular ones. Not allowed with annual instalments or a term under 12 months."],
+ p_bl:["إجمالي الدفعات السنوية كنسبة من السعر، بتتقسم على عدد السنين.","Total of the yearly payments as a share of the price, split over the number of years."],
+ c_cash:["جزء من المشترين بيدفع كاش كامل وقت التعاقد مقابل خصم، والباقي بيتبع خطة التقسيط. الوحدات المباعة مسبقا خارج الحساب ده.","A share of buyers pays everything in cash at contract for a discount; the rest follow the plan. Pre-sold units are excluded."],
+ p_cs:["نسبة المشترين اللي بيدفعوا كاش.","Share of buyers who pay in cash."],
+ p_cd:["الخصم اللي بتديه لمشتري الكاش من سعر الوحدة.","The discount you give cash buyers off the unit price."],
+ c_mt:["وديعة صيانة بتتحصل عند الاستلام فوق سعر الوحدة. تقدر تعتبرها محجوزة (مش سيولة ليك) أو سيولة بتدخل حسابك.","A maintenance deposit collected at handover on top of the price. Treat it as held in escrow (not your cash) or as cash you can use."],
+ p_mp:["قيمة الوديعة كنسبة من سعر الوحدة.","Deposit amount as a percentage of the unit price."],
+ dp:["مقدم الخطة كنسبة من السعر.","Plan down payment as a percentage of the price."],
+ term:["مدة التقسيط بالشهور.","Instalment period in months."],
+ fq:["دورية القسط: شهري، ربع، نصف، أو سنوي.","Instalment frequency: monthly, quarterly, semi-annual or annual."],
+ grace:["شهور من غير أقساط بعد المقدم قبل أول قسط.","Months with no instalments after the down payment before the first one."],
+ dlp:["دفعة الاستلام كنسبة من السعر.","Handover payment as a percentage of the price."],
+ dm:["الشهر اللي بتتدفع فيه دفعة الاستلام. صفر يعني عند آخر قسط.","The month the handover payment falls due. Zero means at the last instalment."],
+ pv:["قيمة الخطة النهارده بالمليون بعد خصم الأقساط المستقبلية بمعدل الخصم.","What the plan is worth today in millions after discounting future instalments."],
+ share:["القيمة الحالية كنسبة من سعر الوحدة المعلن.","Present value as a share of the listed unit price."],
+ hair:["الفرق بين السعر المعلن وقيمته الحالية، وهو الخصم اللي بتديه من غير ما تكتبه.","The gap between the list price and its present value: the discount you give without writing it down."],
+ median:["نص السيناريوهات كاش آخر المشروع أعلى منه ونصها أقل.","Half of the scenarios end with more cash than this and half with less."],
+ p5:["أسوأ 5% من السيناريوهات بتنتهي بكاش أقل من الرقم ده.","The worst 5% of scenarios end with less cash than this."],
+ p95:["أفضل 5% من السيناريوهات بتنتهي بكاش أعلى من الرقم ده.","The best 5% of scenarios end with more cash than this."],
+ defaults:["عدد السيناريوهات اللي الكاش فيها نزل تحت حد الائتمان قبل التسليم.","Number of scenarios where cash dropped below the credit limit before delivery."],
+ firstm:["الشهر اللي أكتر سيناريوهات العجز بتتكسر فيه لأول مرة.","The month in which most shortfall scenarios first break."]
+};
+var tipEl=null,tipBtn=null;
+function hideTip(){if(tipEl){tipEl.remove();tipEl=null;tipBtn=null}}
+function showTip(btn,text){
+  hideTip();tipBtn=btn;
+  tipEl=document.createElement("div");tipEl.className="tip";tipEl.setAttribute("role","tooltip");tipEl.textContent=text;document.body.appendChild(tipEl);
+  var r=btn.getBoundingClientRect(),w=Math.min(280,window.innerWidth-16);tipEl.style.width=w+"px";
+  var left=Math.max(8,Math.min(window.innerWidth-w-8,r.left+r.width/2-w/2));
+  tipEl.style.left=left+"px";tipEl.style.top=(r.bottom+window.scrollY+6)+"px";
+}
+function bindHelp(){
+  Array.prototype.forEach.call(document.querySelectorAll("[data-h]"),function(b){
+    var h=HELP[b.dataset.h];if(!h){b.remove();return}
+    var txt=h[lang==="ar"?0:1],pinned=false;
+    b.textContent=lang==="ar"?"؟":"?";b.setAttribute("aria-label",lang==="ar"?"شرح":"Help");
+    b.onclick=function(e){e.preventDefault();e.stopPropagation();if(tipBtn===b&&pinned){pinned=false;hideTip()}else{pinned=true;showTip(b,txt)}};
+    b.onmouseenter=function(){if(!tipEl)showTip(b,txt)};
+    b.onmouseleave=function(){if(!pinned)hideTip()};
+    b.onblur=function(){pinned=false;hideTip()};
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-u]"),function(e){
+    var u=UNIT[e.dataset.u];if(u)e.textContent=u[lang==="ar"?0:1];else e.remove();
+  });
+}
+document.addEventListener("click",hideTip);
+document.addEventListener("keydown",function(e){if(e.key==="Escape")hideTip()});
+function qh(k){return "<button type='button' class='q' data-h='"+k+"'></button>"}
+function ub(k){return "<small class='un' data-u='"+k+"'></small>"}
 var ORDER=["months","units","presold","velocity","velocity_sd","budget","infl_mean","infl_sd","opening_cash","overhead","credit_line","credit_rate","collect_mean","collect_sd"];
 var PLANS0=[{name:"10/90 × 60",down_pct:.1,term:60,grace:0,freq:1,delivery_pct:0,delivery_month:0},{name:"10% + quarterly × 96",down_pct:.1,term:96,grace:0,freq:3,delivery_pct:0,delivery_month:0},{name:"20% + semi × 72 + 10% delivery",down_pct:.2,term:72,grace:0,freq:6,delivery_pct:.1,delivery_month:84},{name:"10/90 × 84 + 12 grace",down_pct:.1,term:84,grace:12,freq:1,delivery_pct:0,delivery_month:0}];
 var plans=JSON.parse(JSON.stringify(PLANS0));
@@ -231,7 +329,7 @@ function ltr(s){return "<bdi dir='ltr'>"+esc(s)+"</bdi>"}
 
 function buildFields(){
   var h="";
-  ORDER.forEach(function(k){h+="<div class='f'><span data-l='"+k+"'></span><input id='p_"+k+"' type='number' step='any' value='"+D[k]+"'></div>";});
+  ORDER.forEach(function(k){h+="<div class='f'><span class='lb'><b data-l='"+k+"'></b>"+qh(k)+ub(k)+"</span><input id='p_"+k+"' type='number' step='any' value='"+D[k]+"'></div>";});
   $("fields").innerHTML=h;
 }
 /* ---- pricing + payment plan state (UI units: % and currency) ---- */
@@ -242,28 +340,28 @@ function numIn(id,k,label,dis){return "<div class='f"+(dis?" off":"")+"'><span>"
 function radio(name,val,label){return "<label><input type='radio' name='"+name+"' value='"+val+"'"+(ST[name]===val?" checked":"")+"> "+esc(label)+"</label>"}
 function buildPricing(){
   $("c_pricing").innerHTML="<h2>"+esc(t("pricing"))+"</h2>"+
-   "<div class='f'><span>"+esc(t("area"))+"</span><input id='s_area' type='number' step='any' data-k='area' value='"+ST.area+"'></div>"+
-   "<div class='grp'><h3>"+esc(t("basis"))+"</h3><div class='rad'>"+radio("basis","m2",t("basis_m2"))+radio("basis","unit",t("basis_unit"))+"</div>"+
-   "<div class='f'><span>"+esc(t("price_m2"))+"</span><input id='s_price_m2' type='number' step='any' data-k='price_m2'></div>"+
-   "<div class='f'><span>"+esc(t("price_unit"))+"</span><input id='s_price_unit' type='number' step='any' data-k='price_unit'></div></div>"+
-   "<div class='grp'><h3>"+esc(t("policy"))+"</h3><div class='rad'>"+radio("policy","lock",t("pol_lock"))+radio("policy","esc",t("pol_esc"))+"</div>"+
-   "<div class='f'><span>"+esc(t("growth"))+"</span><input id='s_growth' type='number' step='any' data-k='growth' value='"+ST.growth+"'></div></div>"+
-   "<div class='grp'><h3>"+esc(t("derived"))+"</h3><div class='dv' id='derived'></div></div>";
-  var chk=function(k,label,body){return "<div class='chk'><label><input type='checkbox' id='s_"+k+"_on' data-c='"+k+"_on'"+(ST[k+"_on"]?" checked":"")+"> "+esc(label)+"</label><div class='indent' id='b_"+k+"'>"+body+"</div></div>"};
+   "<div class='f'><span class='lb'>"+esc(t("area"))+qh("area")+ub("area")+"</span><input id='s_area' type='number' step='any' data-k='area' value='"+ST.area+"'></div>"+
+   "<div class='grp'><h3>"+esc(t("basis"))+qh("basis")+"</h3><div class='rad'>"+radio("basis","m2",t("basis_m2"))+radio("basis","unit",t("basis_unit"))+"</div>"+
+   "<div class='f'><span class='lb'>"+esc(t("price_m2"))+qh("price_m2")+ub("price_m2")+"</span><input id='s_price_m2' type='number' step='any' data-k='price_m2'></div>"+
+   "<div class='f'><span class='lb'>"+esc(t("price_unit"))+qh("price_unit")+ub("price_unit")+"</span><input id='s_price_unit' type='number' step='any' data-k='price_unit'></div></div>"+
+   "<div class='grp'><h3>"+esc(t("policy"))+qh("policy")+"</h3><div class='rad'>"+radio("policy","lock",t("pol_lock"))+radio("policy","esc",t("pol_esc"))+"</div>"+
+   "<div class='f'><span class='lb'>"+esc(t("growth"))+qh("growth")+ub("growth")+"</span><input id='s_growth' type='number' step='any' data-k='growth' value='"+ST.growth+"'></div></div>"+
+   "<div class='grp'><h3>"+esc(t("derived"))+qh("derived")+"</h3><div class='dv' id='derived'></div></div>";
+  var chk=function(k,label,body){return "<div class='chk'><label><input type='checkbox' id='s_"+k+"_on' data-c='"+k+"_on'"+(ST[k+"_on"]?" checked":"")+"> "+esc(label)+"</label>"+qh("c_"+k)+"<div class='indent' id='b_"+k+"'>"+body+"</div></div>"};
   $("c_plan").innerHTML="<h2>"+esc(t("planh"))+"</h2>"+
-   "<div class='f'><span>"+esc(t("down"))+"</span><input id='s_down' type='number' step='any' data-k='down' value='"+ST.down+"'></div>"+
-   "<div class='f'><span>"+esc(t("termm"))+"</span><input id='s_term' type='number' step='1' data-k='term' value='"+ST.term+"'></div>"+
-   "<div class='grp'><h3>"+esc(t("freq"))+"</h3><div class='rad'>"+[1,3,6,12].map(function(f){return "<label><input type='radio' name='freq' value='"+f+"'"+(ST.freq===f?" checked":"")+"> "+esc(t("f"+f))+"</label>"}).join("")+"</div></div>"+
-   chk("dl",t("c_dl"),"<div class='f'><span>"+esc(t("p_dl"))+"</span><input id='s_dl' type='number' step='any' data-k='dl' value='"+ST.dl+"'></div>")+
-   chk("bl",t("c_bl"),"<div class='f'><span>"+esc(t("p_bl"))+"</span><input id='s_bl' type='number' step='any' data-k='bl' value='"+ST.bl+"'></div>")+
-   chk("cash",t("c_cash"),"<div class='f'><span>"+esc(t("p_cs"))+"</span><input id='s_cs' type='number' step='any' data-k='cs' value='"+ST.cs+"'></div><div class='f'><span>"+esc(t("p_cd"))+"</span><input id='s_cd' type='number' step='any' data-k='cd' value='"+ST.cd+"'></div>")+
-   chk("mt",t("c_mt"),"<div class='f'><span>"+esc(t("p_mp"))+"</span><input id='s_mp' type='number' step='any' data-k='mp' value='"+ST.mp+"'></div><div class='rad'>"+radio("mt_mode","escrow",t("mt_escrow"))+radio("mt_mode","count",t("mt_count"))+"</div>")+
+   "<div class='f'><span class='lb'>"+esc(t("down"))+qh("down")+ub("down")+"</span><input id='s_down' type='number' step='any' data-k='down' value='"+ST.down+"'></div>"+
+   "<div class='f'><span class='lb'>"+esc(t("termm"))+qh("termm")+ub("termm")+"</span><input id='s_term' type='number' step='1' data-k='term' value='"+ST.term+"'></div>"+
+   "<div class='grp'><h3>"+esc(t("freq"))+qh("freq")+"</h3><div class='rad'>"+[1,3,6,12].map(function(f){return "<label><input type='radio' name='freq' value='"+f+"'"+(ST.freq===f?" checked":"")+"> "+esc(t("f"+f))+"</label>"}).join("")+"</div></div>"+
+   chk("dl",t("c_dl"),"<div class='f'><span class='lb'>"+esc(t("p_dl"))+qh("p_dl")+ub("p_dl")+"</span><input id='s_dl' type='number' step='any' data-k='dl' value='"+ST.dl+"'></div>")+
+   chk("bl",t("c_bl"),"<div class='f'><span class='lb'>"+esc(t("p_bl"))+qh("p_bl")+ub("p_bl")+"</span><input id='s_bl' type='number' step='any' data-k='bl' value='"+ST.bl+"'></div>")+
+   chk("cash",t("c_cash"),"<div class='f'><span class='lb'>"+esc(t("p_cs"))+qh("p_cs")+ub("p_cs")+"</span><input id='s_cs' type='number' step='any' data-k='cs' value='"+ST.cs+"'></div><div class='f'><span class='lb'>"+esc(t("p_cd"))+qh("p_cd")+ub("p_cd")+"</span><input id='s_cd' type='number' step='any' data-k='cd' value='"+ST.cd+"'></div>")+
+   chk("mt",t("c_mt"),"<div class='f'><span class='lb'>"+esc(t("p_mp"))+qh("p_mp")+ub("p_mp")+"</span><input id='s_mp' type='number' step='any' data-k='mp' value='"+ST.mp+"'></div><div class='rad'>"+radio("mt_mode","escrow",t("mt_escrow"))+radio("mt_mode","count",t("mt_count"))+"</div>")+
    "<div class='split' id='split'></div><div class='legend2' id='legend2'></div><div class='conf' id='conf'></div>";
   var inp=function(e){var v=Number(e.value);ST[e.dataset.k]=isFinite(v)?v:0;refreshPlan()};
   Array.prototype.forEach.call(document.querySelectorAll("#c_pricing input[data-k],#c_plan input[data-k]"),function(e){e.oninput=function(){inp(e)}});
   Array.prototype.forEach.call(document.querySelectorAll("#c_pricing input[type=radio],#c_plan input[type=radio]"),function(e){e.onchange=function(){ST[e.name]=e.name==="freq"?Number(e.value):e.value;refreshPlan()}});
   Array.prototype.forEach.call(document.querySelectorAll("#c_plan input[type=checkbox]"),function(e){e.onchange=function(){ST[e.dataset.c]=e.checked;refreshPlan()}});
-  refreshPlan();
+  bindHelp();refreshPlan();
 }
 function setDis(ids,dis){ids.forEach(function(id){var e=$(id);if(e){e.disabled=dis;if(e.parentNode&&e.parentNode.classList)e.parentNode.classList.toggle("off",dis)}})}
 function refreshPlan(){
@@ -325,11 +423,11 @@ function pricingParams(){
 function buildPlans(){
   var fsel=function(i,v){return "<select class='pv' data-i='"+i+"' data-k='freq'>"+[1,3,6,12].map(function(f){return "<option value='"+f+"'"+(f===v?" selected":"")+">"+esc(t("f"+f))+"</option>"}).join("")+"</select>"};
   var h=plans.map(function(p,i){
-    var num=function(k,label,v,step){return "<label>"+esc(label)+"<input class='pv' type='number' step='"+(step||"any")+"' data-i='"+i+"' data-k='"+k+"' value='"+v+"'></label>"};
+    var num=function(k,label,v,step){var hk={down_pct:"dp",term:"term",grace:"grace",delivery_pct:"dlp",delivery_month:"dm"}[k];return "<label>"+esc(label)+qh(hk)+"<input class='pv' type='number' step='"+(step||"any")+"' data-i='"+i+"' data-k='"+k+"' value='"+v+"'></label>"};
     return "<div class='plan'><div class='prow'><input class='pn' dir='ltr' data-i='"+i+"' value='"+esc(p.name)+"'><button class='rm' data-i='"+i+"' style='padding:2px 8px'>×</button></div>"+
-     "<div class='pgrid'>"+num("down_pct",t("dp"),p.down_pct*100)+num("term",t("term"),p.term,1)+"<label>"+esc(t("fq"))+fsel(i,p.freq||1)+"</label>"+
+     "<div class='pgrid'>"+num("down_pct",t("dp"),p.down_pct*100)+num("term",t("term"),p.term,1)+"<label>"+esc(t("fq"))+qh("fq")+fsel(i,p.freq||1)+"</label>"+
      num("grace",t("grace"),p.grace||0,1)+num("delivery_pct",t("dlp"),(p.delivery_pct||0)*100)+num("delivery_month",t("dm")+" (0=end)",p.delivery_month||0,1)+"</div></div>";}).join("");
-  $("plans").innerHTML=h;
+  $("plans").innerHTML=h;bindHelp();
   Array.prototype.forEach.call(document.querySelectorAll(".pn"),function(e){e.oninput=function(){plans[e.dataset.i].name=e.value;renderXray()}});
   Array.prototype.forEach.call(document.querySelectorAll(".pv"),function(e){e.oninput=e.onchange=function(){var v=Number(e.value),k=e.dataset.k;plans[e.dataset.i][k]=(k==="down_pct"||k==="delivery_pct")?v/100:v;renderXray()}});
   Array.prototype.forEach.call(document.querySelectorAll(".rm"),function(e){e.onclick=function(){plans.splice(Number(e.dataset.i),1);buildPlans();renderXray()}});
@@ -344,6 +442,7 @@ function applyText(){
   Array.prototype.forEach.call(document.querySelectorAll("[data-l]"),function(e){e.textContent=L[e.dataset.l][lang]});
   Array.prototype.forEach.call(document.querySelectorAll("[data-t]"),function(e){e.textContent=t(e.dataset.t)});
   document.title=lang==="ar"?"محاكي بقاء السيولة للمطور":"Developer Cashflow Survival Simulator";
+  bindHelp();
 }
 function readParams(){
   var pp=pricingParams();
@@ -385,8 +484,8 @@ function render(){
   $("pverd").textContent=pr<=last.target?t("safe"):t("danger");
   var worst=0,wi=0; sim.first_breach_hist.forEach(function(c,i){if(c>worst){worst=c;wi=i}});
   var fc=sim.final_cash;
-  $("kv").innerHTML=[[t("median"),f1(fc["0.5"])],[t("p5"),f1(fc["0.05"])],[t("p95"),f1(fc["0.95"])],[t("defaults"),sim.defaults+" / "+sim.paths],[t("firstm"),worst?String(wi):"–"]]
-   .map(function(r){return "<div><b>"+esc(r[1])+"</b><span>"+esc(r[0])+"</span></div>"}).join("");
+  $("kv").innerHTML=[["median",f1(fc["0.5"])],["p5",f1(fc["0.05"])],["p95",f1(fc["0.95"])],["defaults",sim.defaults+" / "+sim.paths],["firstm",worst?String(wi):"–"]]
+   .map(function(r){return "<div><b>"+esc(r[1])+"</b><span>"+esc(t(r[0]))+qh(r[0])+"</span></div>"}).join("");bindHelp();
   drawFan(sim,p); drawTorn(last.torn); drawHeat(last.heat); renderMax(); renderXray();
 }
 
@@ -437,10 +536,10 @@ function renderMax(){
 function renderXray(){
   var rate=(Number($("rate").value)||0)/100, price=S.effectivePrice(last?last.p:S.paramsFrom({})), r;
   try{r=S.planXray(price,rate,plans)}catch(e){$("xray").innerHTML="<div class='err'>"+esc(e.message)+"</div>";return}
-  var s="<table><tr><th>"+t("planname")+"</th><th class='n'>"+t("pv")+"</th><th class='n'>"+t("share")+"</th><th class='n'>"+t("hair")+"</th></tr>";
+  var s="<table><tr><th>"+t("planname")+"</th><th class='n'>"+t("pv")+qh("pv")+"</th><th class='n'>"+t("share")+qh("share")+"</th><th class='n'>"+t("hair")+qh("hair")+"</th></tr>";
   r.rows.forEach(function(x){var col=x.haircut>0.25?"var(--red)":x.haircut>0.12?"var(--amber)":"var(--green)";
     s+="<tr><td><bdi dir='ltr'>"+esc(x.name)+"</bdi></td><td class='n'>"+x.pv.toFixed(2)+"</td><td class='n'>"+pc(x.pv_share,1)+"</td><td class='n' style='color:"+col+"'>"+pc(x.haircut,1)+"</td></tr>"});
-  $("xray").innerHTML=s+"</table>";
+  $("xray").innerHTML=s+"</table>";bindHelp();
 }
 
 $("run").onclick=run;

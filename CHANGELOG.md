@@ -5,6 +5,7 @@
 - Payment plans: installment frequency (monthly/quarterly/semi-annual/annual), delivery payment, extra yearly payments, cash buyers with discount, maintenance deposit (escrow or counted as cash).
 - Conflicts are enforced in the engine (validation errors, `null` cells in the risk map) and in the UI (conflicting options switch off with a hint).
 - Derived unit economics (price/m², total area, GDV, cost and margin per m², break-even price per m²).
+- Every input has a (?) help tip and an explicit unit (months vs years, % of what, EGP million).
 - Payment-plan x-ray supports frequency and delivery payments. All new options default to off, so 0.1.0 results are unchanged.
 
 ## 0.1.0
