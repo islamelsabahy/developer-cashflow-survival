@@ -27,7 +27,11 @@ Open `docs/index.html` in a browser (works offline) or serve the `docs/` folder 
 
 ## Model in one paragraph
 
-Per path: one persistent sales-pace shock, then each month a cost-inflation shock, a sales count (normal approximation around the expected pace), and a collection-efficiency shock. Down payments arrive at contract; the rest comes in equal monthly installments. Construction spend follows an S-curve scaled by cumulative inflation. Negative cash pays overdraft interest; the path **breaches** when cash falls below minus the credit line. Delivery is the horizon.
+Per path: one persistent sales-pace shock, then each month a cost-inflation shock, a sales count (normal approximation around the expected pace), and a collection-efficiency shock. Down payments arrive at contract; the rest comes in equal installments (monthly to annual). Construction spend follows an S-curve scaled by cumulative inflation. Negative cash pays overdraft interest; the path **breaches** when cash falls below minus the credit line. Delivery is the horizon.
+
+## Egyptian pricing and payment options (0.2)
+
+Price by m² × area or by fixed unit price; optional annual price escalation; delivery payment, extra yearly payments, cash buyers with discount, and a maintenance deposit (escrow or counted as cash). Conflicting options are rejected by the engine and switched off in the UI (e.g. yearly payments with annual installments). All options default to off.
 
 ## Reproducible by design
 

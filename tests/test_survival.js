@@ -25,4 +25,8 @@ const t = V.tornado; close(S.tornado(t.params, t.paths, t.seed), t.out, "tornado
 const h = V.heatmap; close(S.heatmap(h.params, h.down_pcts, h.terms, h.paths, h.seed), h.out, "heatmap"); n++;
 const m = V.max_term; close(S.maxTerm(m.params, m.target, m.terms, m.paths, m.seed), m.out, "max_term"); n++;
 const x = V.xray; close(S.planXray(x.price, x.rate, x.plans), x.out, "xray"); n++;
+const h2 = V.heatmap_conflicts; close(S.heatmap(h2.params, h2.down_pcts, h2.terms, h2.paths, h2.seed), h2.out, "heatmap_conflicts"); n++;
+const m2 = V.max_term_conflicts; close(S.maxTerm(m2.params, m2.target, m2.terms, m2.paths, m2.seed), m2.out, "max_term_conflicts"); n++;
+const t2 = V.tornado_m2; close(S.tornado(t2.params, t2.paths, t2.seed), t2.out, "tornado_m2"); n++;
+V.metrics.forEach((mm, i) => { close(S.metrics(mm.params), mm.out, "metrics" + i); n++; });
 console.log(`ok: ${n} vector groups match the Python reference`);

@@ -49,6 +49,36 @@ td.n,th.n{font-family:var(--mono);direction:ltr}
 footer{margin-top:26px;color:var(--dim);font-size:.8rem;border-top:1px solid var(--line);padding-top:12px}
 a{color:var(--blue)}
 bdi{unicode-bidi:isolate}
+.grp{border-top:1px solid var(--line);padding-top:10px;margin-top:12px}
+.grp>h3{margin:0 0 6px;font:600 .82rem var(--sans);color:var(--amber)}
+.rad{display:flex;gap:6px 16px;flex-wrap:wrap;margin:6px 0;font-size:.86rem}
+.rad label,.chk>label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.rad input,.chk input[type=checkbox]{accent-color:var(--amber);width:16px;height:16px;margin:0}
+.chk{margin:10px 0 2px;font-size:.88rem}
+.chk>label{font-weight:600}
+.indent{margin-inline-start:22px;border-inline-start:2px solid var(--line);padding-inline-start:10px}
+.f input:disabled{opacity:.5;border-style:dashed;cursor:not-allowed}
+.off{opacity:.5}
+.conf{margin:8px 0 0;padding:7px 10px;border:1px dashed #6b5a2a;background:#1a1608;color:#e9d9a6;border-radius:6px;font-size:.8rem}
+.conf.bad{border-color:#7a2e2e;background:#1f0d0d;color:#ffb4b4}
+.conf:empty{display:none}
+.split{display:flex;height:22px;border-radius:5px;overflow:hidden;direction:ltr;border:1px solid var(--line);margin:8px 0 4px}
+.split i{display:block;height:100%}
+.split i:nth-child(1){background:#4aa3ff}.split i:nth-child(2){background:#ffb020}.split i:nth-child(3){background:#35d08a}.split i:nth-child(4){background:#b58cff}
+.legend2{display:flex;gap:4px 12px;flex-wrap:wrap;font-size:.76rem;color:var(--dim)}
+.legend2 b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-inline-end:4px;vertical-align:-1px}
+.dv{display:grid;grid-template-columns:1fr auto;gap:3px 12px;font-size:.84rem}
+.dv span:nth-child(odd){color:var(--dim)}
+.dv span:nth-child(even){font-family:var(--mono);direction:ltr;text-align:end}
+.pos{color:var(--green)}.neg{color:var(--red)}
+.plan{border:1px solid var(--line);border-radius:8px;padding:8px;margin:8px 0;background:#0d121b}
+.prow{display:flex;gap:6px}
+.prow .pn{flex:1;min-width:0}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.pgrid label{display:flex;flex-direction:column;gap:2px;font-size:.7rem;color:var(--dim)}
+.pgrid input,.pgrid select,.prow input{background:#0b0f16;border:1px solid var(--line);color:var(--ink);padding:4px;border-radius:4px;font:.82rem var(--mono);width:100%;min-width:0}
+#heat{overflow-x:auto}
+.heat td.na{background:#243044;color:var(--dim)}
 @media print{
  :root{--bg:#fff;--panel:#fff;--line:#bbb;--ink:#111;--dim:#555}
  body{background:#fff}body:before{display:none}
@@ -76,6 +106,8 @@ bdi{unicode-bidi:isolate}
 
 <div class="grid">
   <div id="inputs">
+    <div class="card" id="c_pricing"></div>
+    <div class="card" id="c_plan"></div>
     <div class="card"><h2 id="t_inputs"></h2><div id="fields"></div>
       <div class="f"><span id="t_paths"></span><input id="paths" type="number" value="2000" min="100" max="20000"></div>
       <div class="f"><span id="t_seed"></span><input id="seed" type="number" value="7"></div>
@@ -144,7 +176,36 @@ var T={
  none:{ar:"لا توجد مدة مناسبة بالمقدم الحالي — ارفع المقدم أو السيولة.",en:"No term meets the limit at this down payment — raise the down payment or liquidity."},
  months:{ar:"شهر",en:"months"}, planname:{ar:"الخطة",en:"Plan"}, dp:{ar:"مقدم %",en:"Down %"}, term:{ar:"شهور",en:"Months"}, grace:{ar:"سماح",en:"Grace"},
  pv:{ar:"القيمة الحالية",en:"PV"}, share:{ar:"% من السعر",en:"% of price"}, hair:{ar:"خصم مخفي",en:"Hidden discount"},
- running:{ar:"جاري الحساب…",en:"Computing…"}, bad:{ar:"مدخلات غير صالحة: ",en:"Invalid input: "}
+ running:{ar:"جاري الحساب…",en:"Computing…"}, bad:{ar:"مدخلات غير صالحة: ",en:"Invalid input: "},
+ pricing:{ar:"الوحدة والتسعير",en:"UNIT & PRICING"}, area:{ar:"متوسط مساحة الوحدة (م²)",en:"Avg unit area (m²)"},
+ basis:{ar:"أساس التسعير (اختار واحد)",en:"Pricing basis (choose one)"},
+ basis_m2:{ar:"سعر المتر × المساحة",en:"Price per m² × area"}, basis_unit:{ar:"سعر وحدة ثابت",en:"Fixed unit price"},
+ price_m2:{ar:"سعر المتر (جنيه/م²)",en:"Price per m² (EGP)"}, price_unit:{ar:"سعر الوحدة (مليون)",en:"Unit price (million)"},
+ policy:{ar:"سياسة السعر (اختار واحد)",en:"Price policy (choose one)"},
+ pol_lock:{ar:"سعر ثابت طول المشروع",en:"Locked price"}, pol_esc:{ar:"زيادة سنوية على المبيعات الجديدة",en:"Annual increase on new sales"},
+ growth:{ar:"نسبة الزيادة السنوية %",en:"Annual increase %"},
+ derived:{ar:"أرقام الوحدة المحسوبة",en:"Derived unit economics"},
+ d_unit:{ar:"سعر الوحدة (مليون)",en:"Unit price (million)"}, d_m2:{ar:"سعر المتر (جنيه)",en:"Price per m² (EGP)"},
+ d_area:{ar:"إجمالي المساحة المباعة (م²)",en:"Total sellable area (m²)"}, d_gdv:{ar:"إجمالي قيمة المبيعات (مليون)",en:"Total sales value (million)"},
+ d_cost:{ar:"تكلفة المتر (جنيه)",en:"Construction cost per m² (EGP)"}, d_margin:{ar:"هامش المتر (جنيه)",en:"Margin per m² (EGP)"},
+ d_be:{ar:"سعر المتر للتعادل شامل المصاريف",en:"Break-even price per m² incl. overhead"}, d_gm:{ar:"هامش إجمالي %",en:"Gross margin %"},
+ planh:{ar:"خطة السداد",en:"PAYMENT PLAN"}, down:{ar:"مقدم %",en:"Down payment %"}, termm:{ar:"مدة التقسيط (شهور)",en:"Installment months"},
+ freq:{ar:"دورية القسط (اختار واحد)",en:"Installment frequency (choose one)"},
+ f1:{ar:"شهري",en:"Monthly"}, f3:{ar:"ربع سنوي",en:"Quarterly"}, f6:{ar:"نصف سنوي",en:"Semi-annual"}, f12:{ar:"سنوي",en:"Annual"},
+ c_dl:{ar:"دفعة استلام",en:"Delivery payment"}, p_dl:{ar:"% من السعر",en:"% of price"},
+ c_bl:{ar:"دفعات سنوية إضافية",en:"Extra yearly payments"}, p_bl:{ar:"% من السعر (موزعة سنوياً)",en:"% of price (spread yearly)"},
+ c_cash:{ar:"مشترين كاش بخصم",en:"Cash buyers with discount"}, p_cs:{ar:"نسبة المشترين الكاش %",en:"Share of cash buyers %"}, p_cd:{ar:"خصم الكاش %",en:"Cash discount %"},
+ c_mt:{ar:"وديعة صيانة (فوق السعر)",en:"Maintenance deposit (on top of price)"}, p_mp:{ar:"% من السعر عند الاستلام",en:"% of price at delivery"},
+ mt_escrow:{ar:"تتحجز (مش سيولة للمطور)",en:"Held in escrow (not developer cash)"}, mt_count:{ar:"تُحسب سيولة للمطور",en:"Counted as developer cash"},
+ conf_bl_year:{ar:"الدفعات السنوية متعارضة مع القسط السنوي، فاتقفلت. اختار واحد منهم.",en:"Yearly payments conflict with yearly installments, so they are switched off. Choose one."},
+ conf_bl_term:{ar:"الدفعات السنوية محتاجة مدة 12 شهر على الأقل، فاتقفلت.",en:"Yearly payments need a term of at least 12 months, so they are switched off."},
+ conf_term:{ar:"مدة التقسيط أقصر من دورية القسط.",en:"The term is shorter than one installment period."},
+ conf_sum:{ar:"المقدم + الاستلام + الدفعات السنوية أكبر من 100% من السعر.",en:"Down payment + delivery + yearly payments exceed 100% of the price."},
+ conf_cash:{ar:"المشترين الكاش بيدفعوا كامل السعر بعد الخصم وقت التعاقد، والباقي بيتقسط. الوحدات المباعة مسبقا خارج الحساب.",en:"Cash buyers pay the discounted price at contract; everyone else follows the plan. Pre-sold units are not split."},
+ s_down:{ar:"مقدم",en:"Down"}, s_inst:{ar:"أقساط",en:"Installments"}, s_year:{ar:"سنوية",en:"Yearly"}, s_dl:{ar:"استلام",en:"Delivery"},
+ inst_line:{ar:"{n} قسط × {x}% كل {f}",en:"{n} installments × {x}% every {f}"},
+ yr_line:{ar:"{n} دفعة سنوية × {x}%",en:"{n} yearly payments × {x}%"},
+ dm:{ar:"شهر الاستلام",en:"Delivery month"}, dlp:{ar:"استلام %",en:"Delivery %"}, fq:{ar:"الدورية",en:"Frequency"}
 };
 var L={
  months:{ar:"شهور حتى التسليم",en:"Months to delivery"}, units:{ar:"عدد الوحدات",en:"Units"}, price:{ar:"متوسط سعر الوحدة",en:"Avg unit price"},
@@ -158,8 +219,8 @@ var L={
 var DRV={velocity:{ar:"سرعة البيع",en:"Sales pace"},budget:{ar:"ميزانية الإنشاء",en:"Construction budget"},infl_mean:{ar:"تضخم التكلفة",en:"Cost inflation"},
  collect_mean:{ar:"نسبة التحصيل",en:"Collection rate"},price:{ar:"سعر الوحدة",en:"Unit price"},down_pct:{ar:"المقدم",en:"Down payment"},
  opening_cash:{ar:"الكاش الافتتاحي",en:"Opening cash"},credit_line:{ar:"حد الائتمان",en:"Credit line"}};
-var ORDER=["months","units","price","down_pct","term","presold","velocity","velocity_sd","budget","infl_mean","infl_sd","opening_cash","overhead","credit_line","credit_rate","collect_mean","collect_sd"];
-var PLANS0=[{name:"10/90 × 60",down_pct:.1,term:60,grace:0},{name:"20/80 × 48",down_pct:.2,term:48,grace:0},{name:"30/70 × 24",down_pct:.3,term:24,grace:0},{name:"10/90 × 84 + 12",down_pct:.1,term:84,grace:12}];
+var ORDER=["months","units","presold","velocity","velocity_sd","budget","infl_mean","infl_sd","opening_cash","overhead","credit_line","credit_rate","collect_mean","collect_sd"];
+var PLANS0=[{name:"10/90 × 60",down_pct:.1,term:60,grace:0,freq:1,delivery_pct:0,delivery_month:0},{name:"10% + quarterly × 96",down_pct:.1,term:96,grace:0,freq:3,delivery_pct:0,delivery_month:0},{name:"20% + semi × 72 + 10% delivery",down_pct:.2,term:72,grace:0,freq:6,delivery_pct:.1,delivery_month:84},{name:"10/90 × 84 + 12 grace",down_pct:.1,term:84,grace:12,freq:1,delivery_pct:0,delivery_month:0}];
 var plans=JSON.parse(JSON.stringify(PLANS0));
 var $=function(id){return document.getElementById(id)};
 function t(k){return T[k][lang]}
@@ -173,16 +234,104 @@ function buildFields(){
   ORDER.forEach(function(k){h+="<div class='f'><span data-l='"+k+"'></span><input id='p_"+k+"' type='number' step='any' value='"+D[k]+"'></div>";});
   $("fields").innerHTML=h;
 }
+/* ---- pricing + payment plan state (UI units: % and currency) ---- */
+function st0(){return {basis:"m2",area:D.area,price_m2:D.price_m2,price_unit:D.price,policy:"lock",growth:10,
+  down:D.down_pct*100,term:D.term,freq:1,dl_on:false,dl:10,bl_on:false,bl:10,cash_on:false,cs:15,cd:10,mt_on:false,mp:5,mt_mode:"escrow"}}
+var ST=st0();
+function numIn(id,k,label,dis){return "<div class='f"+(dis?" off":"")+"'><span>"+esc(label)+"</span><input id='"+id+"' type='number' step='any' data-k='"+k+"' value='"+ST[k]+"'"+(dis?" disabled":"")+"></div>"}
+function radio(name,val,label){return "<label><input type='radio' name='"+name+"' value='"+val+"'"+(ST[name]===val?" checked":"")+"> "+esc(label)+"</label>"}
+function buildPricing(){
+  $("c_pricing").innerHTML="<h2>"+esc(t("pricing"))+"</h2>"+
+   "<div class='f'><span>"+esc(t("area"))+"</span><input id='s_area' type='number' step='any' data-k='area' value='"+ST.area+"'></div>"+
+   "<div class='grp'><h3>"+esc(t("basis"))+"</h3><div class='rad'>"+radio("basis","m2",t("basis_m2"))+radio("basis","unit",t("basis_unit"))+"</div>"+
+   "<div class='f'><span>"+esc(t("price_m2"))+"</span><input id='s_price_m2' type='number' step='any' data-k='price_m2'></div>"+
+   "<div class='f'><span>"+esc(t("price_unit"))+"</span><input id='s_price_unit' type='number' step='any' data-k='price_unit'></div></div>"+
+   "<div class='grp'><h3>"+esc(t("policy"))+"</h3><div class='rad'>"+radio("policy","lock",t("pol_lock"))+radio("policy","esc",t("pol_esc"))+"</div>"+
+   "<div class='f'><span>"+esc(t("growth"))+"</span><input id='s_growth' type='number' step='any' data-k='growth' value='"+ST.growth+"'></div></div>"+
+   "<div class='grp'><h3>"+esc(t("derived"))+"</h3><div class='dv' id='derived'></div></div>";
+  var chk=function(k,label,body){return "<div class='chk'><label><input type='checkbox' id='s_"+k+"_on' data-c='"+k+"_on'"+(ST[k+"_on"]?" checked":"")+"> "+esc(label)+"</label><div class='indent' id='b_"+k+"'>"+body+"</div></div>"};
+  $("c_plan").innerHTML="<h2>"+esc(t("planh"))+"</h2>"+
+   "<div class='f'><span>"+esc(t("down"))+"</span><input id='s_down' type='number' step='any' data-k='down' value='"+ST.down+"'></div>"+
+   "<div class='f'><span>"+esc(t("termm"))+"</span><input id='s_term' type='number' step='1' data-k='term' value='"+ST.term+"'></div>"+
+   "<div class='grp'><h3>"+esc(t("freq"))+"</h3><div class='rad'>"+[1,3,6,12].map(function(f){return "<label><input type='radio' name='freq' value='"+f+"'"+(ST.freq===f?" checked":"")+"> "+esc(t("f"+f))+"</label>"}).join("")+"</div></div>"+
+   chk("dl",t("c_dl"),"<div class='f'><span>"+esc(t("p_dl"))+"</span><input id='s_dl' type='number' step='any' data-k='dl' value='"+ST.dl+"'></div>")+
+   chk("bl",t("c_bl"),"<div class='f'><span>"+esc(t("p_bl"))+"</span><input id='s_bl' type='number' step='any' data-k='bl' value='"+ST.bl+"'></div>")+
+   chk("cash",t("c_cash"),"<div class='f'><span>"+esc(t("p_cs"))+"</span><input id='s_cs' type='number' step='any' data-k='cs' value='"+ST.cs+"'></div><div class='f'><span>"+esc(t("p_cd"))+"</span><input id='s_cd' type='number' step='any' data-k='cd' value='"+ST.cd+"'></div>")+
+   chk("mt",t("c_mt"),"<div class='f'><span>"+esc(t("p_mp"))+"</span><input id='s_mp' type='number' step='any' data-k='mp' value='"+ST.mp+"'></div><div class='rad'>"+radio("mt_mode","escrow",t("mt_escrow"))+radio("mt_mode","count",t("mt_count"))+"</div>")+
+   "<div class='split' id='split'></div><div class='legend2' id='legend2'></div><div class='conf' id='conf'></div>";
+  var inp=function(e){var v=Number(e.value);ST[e.dataset.k]=isFinite(v)?v:0;refreshPlan()};
+  Array.prototype.forEach.call(document.querySelectorAll("#c_pricing input[data-k],#c_plan input[data-k]"),function(e){e.oninput=function(){inp(e)}});
+  Array.prototype.forEach.call(document.querySelectorAll("#c_pricing input[type=radio],#c_plan input[type=radio]"),function(e){e.onchange=function(){ST[e.name]=e.name==="freq"?Number(e.value):e.value;refreshPlan()}});
+  Array.prototype.forEach.call(document.querySelectorAll("#c_plan input[type=checkbox]"),function(e){e.onchange=function(){ST[e.dataset.c]=e.checked;refreshPlan()}});
+  refreshPlan();
+}
+function setDis(ids,dis){ids.forEach(function(id){var e=$(id);if(e){e.disabled=dis;if(e.parentNode&&e.parentNode.classList)e.parentNode.classList.toggle("off",dis)}})}
+function refreshPlan(){
+  var notes=[],bad=false;
+  // pricing: the non-chosen price field is read-only and shows the derived value
+  var m2=ST.basis==="m2";
+  if(m2) ST.price_unit=Math.round(ST.area*ST.price_m2)/1e6; else ST.price_m2=ST.area>0?Math.round(ST.price_unit*1e6/ST.area):0;
+  [["s_price_m2",ST.price_m2],["s_price_unit",ST.price_unit]].forEach(function(x){var e=$(x[0]);if(e!==document.activeElement)e.value=x[1]});
+  setDis(["s_price_unit"],m2); setDis(["s_price_m2"],!m2);
+  setDis(["s_growth"],ST.policy!=="esc");
+  // yearly payments conflict with annual installments / short terms
+  var blBlock=ST.freq===12||ST.term<12;
+  if(blBlock&&ST.bl_on){ST.bl_on=false;$("s_bl_on").checked=false;notes.push(t(ST.freq===12?"conf_bl_year":"conf_bl_term"))}
+  $("s_bl_on").disabled=blBlock;
+  if(blBlock&&!notes.length) notes.push(t(ST.freq===12?"conf_bl_year":"conf_bl_term"));
+  ["dl","bl","cash","mt"].forEach(function(k){var on=ST[k+"_on"];Array.prototype.forEach.call($("b_"+k).querySelectorAll("input"),function(e){e.disabled=!on||(k==="bl"&&blBlock);if(e.parentNode.classList)e.parentNode.classList.toggle("off",e.disabled)})});
+  $("b_mt").style.display=ST.mt_on?"":"none"; 
+  ["dl","bl","cash"].forEach(function(k){$("b_"+k).style.display=ST[k+"_on"]?"":"none"});
+  if(ST.term<ST.freq){notes.push(t("conf_term"));bad=true}
+  var down=ST.down,dl=ST.dl_on?ST.dl:0,bl=ST.bl_on?ST.bl:0,inst=100-down-dl-bl;
+  if(inst<-1e-9){notes.push(t("conf_sum"));bad=true}
+  if(ST.cash_on) notes.push(t("conf_cash"));
+  // composition bar
+  var seg=[[down,"s_down"],[Math.max(inst,0),"s_inst"],[bl,"s_year"],[dl,"s_dl"]];
+  var tot=seg.reduce(function(a,x){return a+Math.max(x[0],0)},0)||1;
+  $("split").innerHTML=seg.map(function(x){return "<i style='width:"+(Math.max(x[0],0)/tot*100)+"%' title='"+esc(t(x[1]))+"'></i>"}).join("");
+  var cols=["#4aa3ff","#ffb020","#35d08a","#b58cff"];
+  var nI=Math.floor(ST.term/ST.freq)||0,nB=Math.floor(ST.term/12)||0;
+  var fl=t("f"+ST.freq);
+  var lines=seg.map(function(x,i){return "<span><b style='background:"+cols[i]+"'></b>"+esc(t(x[1]))+" "+ltr(x[0].toFixed(1).replace(/\.0$/,"")+"%")+"</span>"});
+  $("legend2").innerHTML=lines.join("");
+  var extra=[];
+  if(nI>0&&inst>0) extra.push(t("inst_line").replace("{n}",nI).replace("{x}",(inst/nI).toFixed(2)).replace("{f}",fl));
+  if(bl>0&&nB>0) extra.push(t("yr_line").replace("{n}",nB).replace("{x}",(bl/nB).toFixed(2)));
+  $("conf").className="conf"+(bad?" bad":"");
+  $("conf").innerHTML=(extra.length?"<div>"+esc(extra.join(" · "))+"</div>":"")+notes.map(function(n){return "<div>"+esc(n)+"</div>"}).join("");
+  // derived economics
+  var d=$("derived");
+  try{
+    var mm=S.metrics(pricingParams());
+    var money=function(v){return Math.round(v).toLocaleString("en-US")};
+    var gmc=mm.gross_margin<0?"neg":"pos",mc=mm.margin_m2<0?"neg":"pos";
+    d.innerHTML=[[t("d_unit"),mm.unit_price.toFixed(3)],[t("d_m2"),money(mm.price_m2)],[t("d_area"),money(mm.total_area)],[t("d_gdv"),mm.gdv.toFixed(1)],
+      [t("d_cost"),money(mm.cost_m2)],[t("d_margin"),"<span class='"+mc+"'>"+money(mm.margin_m2)+"</span>"],[t("d_be"),money(mm.breakeven_m2)],[t("d_gm"),"<span class='"+gmc+"'>"+(mm.gross_margin*100).toFixed(1)+"%</span>"]]
+      .map(function(r){return "<span>"+esc(r[0])+"</span><span>"+(String(r[1]).indexOf("<span")===0?r[1]:esc(r[1]))+"</span>"}).join("");
+  }catch(e){d.innerHTML="<span>"+esc(e.message)+"</span><span></span>"}
+}
+function pricingParams(){
+  var m2=ST.basis==="m2",p={};
+  ORDER.forEach(function(k){var e=$("p_"+k);if(e)p[k]=Number(e.value)});
+  p.area=ST.area; p.price_by_m2=m2?1:0; p.price_m2=ST.price_m2; p.price=ST.price_unit;
+  p.price_growth=ST.policy==="esc"?ST.growth/100:0;
+  p.down_pct=ST.down/100; p.term=ST.term; p.freq=ST.freq;
+  p.delivery_pct=ST.dl_on?ST.dl/100:0; p.balloon_pct=ST.bl_on?ST.bl/100:0;
+  p.cash_share=ST.cash_on?ST.cs/100:0; p.cash_discount=ST.cash_on?ST.cd/100:0;
+  p.maint_pct=ST.mt_on?ST.mp/100:0; p.maint_counted=ST.mt_on&&ST.mt_mode==="count"?1:0;
+  return p;
+}
 function buildPlans(){
-  var h="<table><tr><th data-t='planname'></th><th data-t='dp'></th><th data-t='term'></th><th data-t='grace'></th><th></th></tr>";
-  plans.forEach(function(p,i){
-    h+="<tr><td><input class='pn' dir='ltr' data-i='"+i+"' value='"+esc(p.name)+"' style='width:100%;min-width:92px;background:#0b0f16;border:1px solid var(--line);color:var(--ink);padding:3px;border-radius:4px'></td>"+
-    ["down_pct","term","grace"].map(function(k){var v=k==="down_pct"?p[k]*100:p[k];return "<td><input class='pv' data-i='"+i+"' data-k='"+k+"' type='number' value='"+v+"' style='width:52px;background:#0b0f16;border:1px solid var(--line);color:var(--ink);padding:3px;border-radius:4px;font-family:var(--mono)'></td>"}).join("")+
-    "<td><button class='rm' data-i='"+i+"' style='padding:2px 8px'>×</button></td></tr>";});
-  $("plans").innerHTML=h+"</table>";
-  applyText();
-  Array.prototype.forEach.call(document.querySelectorAll(".pn"),function(e){e.oninput=function(){plans[e.dataset.i].name=e.value}});
-  Array.prototype.forEach.call(document.querySelectorAll(".pv"),function(e){e.oninput=function(){var v=Number(e.value);plans[e.dataset.i][e.dataset.k]=e.dataset.k==="down_pct"?v/100:v}});
+  var fsel=function(i,v){return "<select class='pv' data-i='"+i+"' data-k='freq'>"+[1,3,6,12].map(function(f){return "<option value='"+f+"'"+(f===v?" selected":"")+">"+esc(t("f"+f))+"</option>"}).join("")+"</select>"};
+  var h=plans.map(function(p,i){
+    var num=function(k,label,v,step){return "<label>"+esc(label)+"<input class='pv' type='number' step='"+(step||"any")+"' data-i='"+i+"' data-k='"+k+"' value='"+v+"'></label>"};
+    return "<div class='plan'><div class='prow'><input class='pn' dir='ltr' data-i='"+i+"' value='"+esc(p.name)+"'><button class='rm' data-i='"+i+"' style='padding:2px 8px'>×</button></div>"+
+     "<div class='pgrid'>"+num("down_pct",t("dp"),p.down_pct*100)+num("term",t("term"),p.term,1)+"<label>"+esc(t("fq"))+fsel(i,p.freq||1)+"</label>"+
+     num("grace",t("grace"),p.grace||0,1)+num("delivery_pct",t("dlp"),(p.delivery_pct||0)*100)+num("delivery_month",t("dm")+" (0=end)",p.delivery_month||0,1)+"</div></div>";}).join("");
+  $("plans").innerHTML=h;
+  Array.prototype.forEach.call(document.querySelectorAll(".pn"),function(e){e.oninput=function(){plans[e.dataset.i].name=e.value;renderXray()}});
+  Array.prototype.forEach.call(document.querySelectorAll(".pv"),function(e){e.oninput=e.onchange=function(){var v=Number(e.value),k=e.dataset.k;plans[e.dataset.i][k]=(k==="down_pct"||k==="delivery_pct")?v/100:v;renderXray()}});
   Array.prototype.forEach.call(document.querySelectorAll(".rm"),function(e){e.onclick=function(){plans.splice(Number(e.dataset.i),1);buildPlans();renderXray()}});
 }
 function applyText(){
@@ -197,9 +346,10 @@ function applyText(){
   document.title=lang==="ar"?"محاكي بقاء السيولة للمطور":"Developer Cashflow Survival Simulator";
 }
 function readParams(){
-  var p={};
-  ORDER.forEach(function(k){p[k]=Number($("p_"+k).value)});
-  return S.paramsFrom(p);
+  var pp=pricingParams();
+  if(ST.term<ST.freq) throw new Error(t("conf_term"));
+  if(ST.down+(ST.dl_on?ST.dl:0)+(ST.bl_on?ST.bl:0)>100+1e-9) throw new Error(t("conf_sum"));
+  return S.paramsFrom(pp);
 }
 var last=null;
 
@@ -277,7 +427,7 @@ function heatCol(v){ // green -> amber -> red
 }
 function drawHeat(h){
   var s="<table class='heat'><tr><th></th>"+h.terms.map(function(k){return "<th class='n'>"+k+" "+t("months")+"</th>"}).join("")+"</tr>";
-  h.grid.forEach(function(row,i){s+="<tr><th class='n'>"+Math.round(h.down_pcts[i]*100)+"%</th>"+row.map(function(v){return "<td style='background:"+heatCol(v)+"'>"+pc(v,0)+"</td>"}).join("")+"</tr>"});
+  h.grid.forEach(function(row,i){s+="<tr><th class='n'>"+Math.round(h.down_pcts[i]*100)+"%</th>"+row.map(function(v){return v===null?"<td class='na'>–</td>":"<td style='background:"+heatCol(v)+"'>"+pc(v,0)+"</td>"}).join("")+"</tr>"});
   $("heat").innerHTML=s+"</table>";
 }
 function renderMax(){
@@ -285,7 +435,7 @@ function renderMax(){
   $("maxterm").innerHTML=m.best_term?"<b>"+esc(t("maxterm"))+"</b> "+ltr(m.best_term+" "+t("months"))+" @ "+ltr(Math.round(p.down_pct*100)+"%")+" · "+ltr("≤ "+pc(last.target,0)):"<b>"+esc(t("none"))+"</b>";
 }
 function renderXray(){
-  var rate=(Number($("rate").value)||0)/100, price=last?last.p.price:D.price, r;
+  var rate=(Number($("rate").value)||0)/100, price=S.effectivePrice(last?last.p:S.paramsFrom({})), r;
   try{r=S.planXray(price,rate,plans)}catch(e){$("xray").innerHTML="<div class='err'>"+esc(e.message)+"</div>";return}
   var s="<table><tr><th>"+t("planname")+"</th><th class='n'>"+t("pv")+"</th><th class='n'>"+t("share")+"</th><th class='n'>"+t("hair")+"</th></tr>";
   r.rows.forEach(function(x){var col=x.haircut>0.25?"var(--red)":x.haircut>0.12?"var(--amber)":"var(--green)";
@@ -294,15 +444,15 @@ function renderXray(){
 }
 
 $("run").onclick=run;
-$("reset").onclick=function(){ORDER.forEach(function(k){$("p_"+k).value=D[k]});plans=JSON.parse(JSON.stringify(PLANS0));buildPlans();run()};
-$("lang").onclick=function(){lang=lang==="ar"?"en":"ar";try{localStorage.setItem("surv_lang",lang)}catch(e){}applyText();buildPlans();render()};
-$("addplan").onclick=function(){plans.push({name:"new",down_pct:.15,term:36,grace:0});buildPlans();renderXray()};
+$("reset").onclick=function(){ORDER.forEach(function(k){$("p_"+k).value=D[k]});ST=st0();buildPricing();plans=JSON.parse(JSON.stringify(PLANS0));buildPlans();run()};
+$("lang").onclick=function(){lang=lang==="ar"?"en":"ar";try{localStorage.setItem("surv_lang",lang)}catch(e){}applyText();buildPricing();buildPlans();render()};
+$("addplan").onclick=function(){plans.push({name:"new",down_pct:.15,term:36,grace:0,freq:1,delivery_pct:0,delivery_month:0});buildPlans();renderXray()};
 $("rate").oninput=renderXray;
 var oldTitle;
 $("pdf").onclick=function(){oldTitle=document.title;document.title="survival-report-"+new Date().toISOString().slice(0,10);window.print()};
 window.addEventListener("afterprint",function(){if(oldTitle) document.title=oldTitle});
 
-buildFields(); buildPlans(); applyText(); run();
+buildFields(); buildPricing(); buildPlans(); applyText(); run();
 })();
 </script>
 </body>
