@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0
+- Import from Land Deal Lab through the URL (`?from=ldl&...`), with an "imported" banner and a "land paid up front" field deducted from opening cash.
+
 ## 0.2.0
 - Egyptian-market pricing: average unit area, price per m² or fixed unit price (radio: choose one), optional annual price escalation.
 - Payment plans: installment frequency (monthly/quarterly/semi-annual/annual), delivery payment, extra yearly payments, cash buyers with discount, maintenance deposit (escrow or counted as cash).

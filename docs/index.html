@@ -112,11 +112,14 @@ bdi{unicode-bidi:isolate}
 </header>
 <div class="warn" id="t_warn"></div>
 
+<div class="warn" id="imp" style="display:none"></div>
+
 <div class="grid">
   <div id="inputs">
     <div class="card" id="c_pricing"></div>
     <div class="card" id="c_plan"></div>
     <div class="card"><h2 id="t_inputs"></h2><div id="fields"></div>
+      <div class="f"><span class="lb"><b id="t_land"></b><button type="button" class="q" data-h="land"></button><small class="un" data-u="land"></small></span><input id="land_up" type="number" step="any" value="0" min="0"></div>
       <div class="f"><span class="lb"><b id="t_paths"></b><button type="button" class="q" data-h="paths"></button><small class="un" data-u="paths"></small></span><input id="paths" type="number" value="2000" min="100" max="20000"></div>
       <div class="f"><span class="lb"><b id="t_seed"></b><button type="button" class="q" data-h="seed"></button><small class="un" data-u="seed"></small></span><input id="seed" type="number" value="7"></div>
       <div class="f"><span class="lb"><b id="t_target"></b><button type="button" class="q" data-h="target"></button><small class="un" data-u="target"></small></span><input id="target" type="number" value="10" min="0" max="100"></div>
@@ -145,6 +148,7 @@ bdi{unicode-bidi:isolate}
     <div class="card"><h2 id="t_xray"></h2><p class="hint" id="t_xray_h"></p><div id="xray"></div></div>
   </div>
 </div>
+<p class="noprint" style="margin-top:14px"><a id="t_back" href="https://islamelsabahy.github.io/land-deal-lab/" style="color:var(--amber)"></a></p>
 <footer id="t_foot"></footer>
 </div>
 <script src="survival.js"></script>
@@ -185,6 +189,10 @@ var T={
  months:{ar:"شهر",en:"months"}, planname:{ar:"الخطة",en:"Plan"}, dp:{ar:"مقدم %",en:"Down %"}, term:{ar:"شهور",en:"Months"}, grace:{ar:"سماح",en:"Grace"},
  pv:{ar:"القيمة الحالية",en:"PV"}, share:{ar:"% من السعر",en:"% of price"}, hair:{ar:"خصم مخفي",en:"Hidden discount"},
  running:{ar:"جاري الحساب…",en:"Computing…"}, bad:{ar:"مدخلات غير صالحة: ",en:"Invalid input: "},
+ land:{ar:"دفعة الأرض في البداية",en:"Land paid up front"},
+ imp:{ar:"مستورد من Land Deal Lab: سعر المتر {pm} جنيه، {u} وحدة، ميزانية إنشاء {b} مليون، دفعة أرض أولى {l} مليون. الكاش الافتتاحي اتحط = الأرض + كاش تشغيل {c} مليون (افتراضي) — عدّله حسب سيولتك الحقيقية. مساحة الوحدة 150 م² افتراضية.",en:"Imported from Land Deal Lab: price/m² {pm} EGP, {u} units, build budget {b}M, upfront land {l}M. Opening cash set to land + {c}M working cash (default) — adjust to your real liquidity. Unit area assumed 150 m²."},
+ land_big:{ar:"دفعة الأرض أكبر من الكاش الافتتاحي بـ {x} مليون — زوّد الكاش الافتتاحي (ملكية/تمويل) أو قلل دفعة الأرض.",en:"Land payment exceeds opening cash by {x}M — raise opening cash (equity/financing) or lower the land payment."},
+ back:{ar:"ابدأ من صفقة أرض",en:"Start from a land deal"},
  pricing:{ar:"الوحدة والتسعير",en:"UNIT & PRICING"}, area:{ar:"متوسط مساحة الوحدة",en:"Avg unit area"},
  basis:{ar:"أساس التسعير (اختار واحد)",en:"Pricing basis (choose one)"},
  basis_m2:{ar:"سعر المتر × المساحة",en:"Price per m² × area"}, basis_unit:{ar:"سعر وحدة ثابت",en:"Fixed unit price"},
@@ -233,7 +241,7 @@ var UNIT={
  infl_mean:["كسر شهري (0.012 = 1.2% شهريا)","monthly fraction (0.012 = 1.2%/month)"], infl_sd:["كسر شهري (0.01 = 1%)","monthly fraction (0.01 = 1%)"],
  opening_cash:["مليون جنيه","EGP million"], overhead:["مليون جنيه / شهر","EGP million / month"], credit_line:["مليون جنيه","EGP million"],
  credit_rate:["كسر شهري (0.02 = 2% شهريا)","monthly fraction (0.02 = 2%/month)"], collect_mean:["نسبة من 0 إلى 1 (0.93 = 93%)","0 to 1 (0.93 = 93%)"], collect_sd:["نسبة (0.05 = ±5 نقط)","ratio (0.05 = ±5 points)"],
- paths:["سيناريو","paths"], seed:["رقم صحيح","integer"], target:["% احتمال","% probability"], rate:["% في السنة","% per year"],
+ land:["مليون جنيه","EGP million"], paths:["سيناريو","paths"], seed:["رقم صحيح","integer"], target:["% احتمال","% probability"], rate:["% في السنة","% per year"],
  area:["م²","m²"], price_m2:["جنيه / م²","EGP / m²"], price_unit:["مليون جنيه","EGP million"], growth:["% في السنة","% per year"],
  down:["% من السعر","% of price"], termm:["شهر","months"], p_dl:["% من السعر","% of price"], p_bl:["% من السعر (موزعة على السنين)","% of price (spread over the years)"],
  p_cs:["% من المبيعات","% of sales"], p_cd:["% خصم من السعر","% off the price"], p_mp:["% من السعر (فوق السعر)","% of price (on top)"]
@@ -253,6 +261,7 @@ var HELP={
  credit_rate:["الفايدة الشهرية على الكاش السالب. اكتبها عشري: 0.02 يعني 2% في الشهر.","Monthly interest on negative cash. Enter a decimal: 0.02 means 2% per month."],
  collect_mean:["نسبة الأقساط المستحقة اللي بتتحصل فعلاً. 0.93 يعني 93%، والباقي بيتأخر أو بيتعثر.","Share of due instalments actually collected. 0.93 means 93%; the rest is late or lost."],
  collect_sd:["تذبذب نسبة التحصيل من شهر للتاني.","Month-to-month volatility of the collection rate."],
+ land:["دفعة بتدفعها لصاحب الأرض في الشهر صفر. بتتخصم من الكاش الافتتاحي قبل المحاكاة (الأقساط المتأخرة للأرض مش داخلة في النموذج).","Paid to the landowner at month zero. It is deducted from opening cash before the simulation (deferred land instalments are not modelled)."],
  paths:["عدد السيناريوهات العشوائية اللي بتتحسب. أكتر = نتيجة أدق وأبطأ شوية.","How many random scenarios are simulated. More means a steadier result but slightly slower."],
  seed:["رقم بيثبّت العشوائية: نفس الرقم بيدي نفس النتيجة بالظبط، تقدر تغيره عشان تختبر الثبات.","A number that fixes the randomness: the same number gives exactly the same result; change it to test stability."],
  target:["أقصى احتمال عجز تقبله. تحت الرقم ده الخطة آمنة، فوقه الأداة بتحذرك وبتحسب أطول مدة تقسيط ممكنة.","The highest shortfall probability you accept. Below it the plan is safe; above it the tool warns you and finds the longest affordable term."],
@@ -436,7 +445,7 @@ function applyText(){
   document.documentElement.lang=lang; document.documentElement.dir=lang==="ar"?"rtl":"ltr";
   $("lang").textContent=lang==="ar"?"EN":"عربي";
   var map={t_kicker:"kicker",t_title:"title",t_sub:"sub",t_warn:"warn",t_inputs:"inputs",t_paths:"paths",t_seed:"seed",t_target:"target",run:"run",reset:"reset",pdf:"pdf",
-   t_xray_in:"xray_in",t_rate:"rate",addplan:"addplan",t_verdict:"verdict",t_fan:"fan",t_torn:"torn",t_torn_h:"torn_h",t_heat:"heat",t_heat_h:"heat_h",t_xray:"xray",t_xray_h:"xray_h",t_foot:"foot",
+   t_xray_in:"xray_in",t_land:"land",t_back:"back",t_rate:"rate",addplan:"addplan",t_verdict:"verdict",t_fan:"fan",t_torn:"torn",t_torn_h:"torn_h",t_heat:"heat",t_heat_h:"heat_h",t_xray:"xray",t_xray_h:"xray_h",t_foot:"foot",
    l_b90:"b90",l_b50:"b50",l_med:"med",l_line:"line"};
   Object.keys(map).forEach(function(id){$(id).textContent=t(map[id])});
   Array.prototype.forEach.call(document.querySelectorAll("[data-l]"),function(e){e.textContent=L[e.dataset.l][lang]});
@@ -445,7 +454,10 @@ function applyText(){
   bindHelp();
 }
 function readParams(){
-  var pp=pricingParams();
+  var pp=pricingParams(), land=Number($("land_up").value)||0;
+  if(land<0) throw new Error(t("land_big").replace("{x}","0"));
+  if(land>pp.opening_cash) throw new Error(t("land_big").replace("{x}",(land-pp.opening_cash).toFixed(1)));
+  pp.opening_cash=pp.opening_cash-land;
   if(ST.term<ST.freq) throw new Error(t("conf_term"));
   if(ST.down+(ST.dl_on?ST.dl:0)+(ST.bl_on?ST.bl:0)>100+1e-9) throw new Error(t("conf_sum"));
   return S.paramsFrom(pp);
@@ -543,15 +555,36 @@ function renderXray(){
 }
 
 $("run").onclick=run;
-$("reset").onclick=function(){ORDER.forEach(function(k){$("p_"+k).value=D[k]});ST=st0();buildPricing();plans=JSON.parse(JSON.stringify(PLANS0));buildPlans();run()};
-$("lang").onclick=function(){lang=lang==="ar"?"en":"ar";try{localStorage.setItem("surv_lang",lang)}catch(e){}applyText();buildPricing();buildPlans();render()};
+$("reset").onclick=function(){ORDER.forEach(function(k){$("p_"+k).value=D[k]});ST=st0();$("land_up").value=0;IMP=null;showImp();buildPricing();plans=JSON.parse(JSON.stringify(PLANS0));buildPlans();run()};
+$("lang").onclick=function(){lang=lang==="ar"?"en":"ar";try{localStorage.setItem("surv_lang",lang)}catch(e){}applyText();buildPricing();buildPlans();showImp();render()};
 $("addplan").onclick=function(){plans.push({name:"new",down_pct:.15,term:36,grace:0,freq:1,delivery_pct:0,delivery_month:0});buildPlans();renderXray()};
 $("rate").oninput=renderXray;
 var oldTitle;
 $("pdf").onclick=function(){oldTitle=document.title;document.title="survival-report-"+new Date().toISOString().slice(0,10);window.print()};
 window.addEventListener("afterprint",function(){if(oldTitle) document.title=oldTitle});
 
-buildFields(); buildPricing(); buildPlans(); applyText(); run();
+var IMP=null;
+function applyImport(){
+  var q;try{q=new URLSearchParams(location.search)}catch(e){return}
+  if(q.get("from")!=="ldl") return;
+  var g=function(k,lo,hi){var v=Number(q.get(k));return isFinite(v)&&q.get(k)!==null&&v>=lo&&v<=hi?v:null};
+  var o={pm:g("price_m2",0,1e7),area:g("area",1,1e5),units:g("units",1,1e5),budget:g("budget",0,1e7),months:g("months",1,120),down:g("down",0,100),term:g("term",0,240),
+    overhead:g("overhead",0,1e5),velocity:g("velocity",0,1e4),land:g("land",0,1e7),growth:g("growth",0,300),infl:g("infl",0,0.5)};
+  var set=function(k,v){if(v!==null){var e=$("p_"+k);if(e)e.value=v}};
+  set("units",o.units);set("budget",o.budget);set("months",o.months);set("overhead",o.overhead);set("velocity",o.velocity);set("presold",0);set("infl_mean",o.infl);
+  if(o.pm!==null){ST.basis="m2";ST.price_m2=o.pm}
+  if(o.area!==null) ST.area=o.area;
+  if(o.down!==null) ST.down=o.down;
+  if(o.term!==null) ST.term=Math.max(1,o.term);
+  if(o.growth!==null&&o.growth>0){ST.policy="esc";ST.growth=o.growth}
+  if(o.land!==null){$("land_up").value=o.land;$("p_opening_cash").value=+(o.land+D.opening_cash).toFixed(1)}
+  IMP=o;
+}
+function showImp(){
+  var b=$("imp");if(!IMP){b.style.display="none";return}
+  b.style.display="";b.textContent=t("imp").replace("{pm}",Math.round(IMP.pm||0).toLocaleString("en-US")).replace("{u}",IMP.units||"–").replace("{b}",IMP.budget||"–").replace("{l}",IMP.land||0).replace("{c}",D.opening_cash);
+}
+buildFields(); applyImport(); buildPricing(); buildPlans(); applyText(); showImp(); run();
 })();
 </script>
 </body>

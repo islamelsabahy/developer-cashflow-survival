@@ -33,6 +33,10 @@ Per path: one persistent sales-pace shock, then each month a cost-inflation shoc
 
 Price by m² × area or by fixed unit price; optional annual price escalation; delivery payment, extra yearly payments, cash buyers with discount, and a maintenance deposit (escrow or counted as cash). Conflicting options are rejected by the engine and switched off in the UI (e.g. yearly payments with annual installments). All options default to off.
 
+## Start from a land deal (0.3)
+
+[Land Deal Lab](https://github.com/islamelsabahy/land-deal-lab) has a "Send to Cashflow Survival" button. It opens this page with the selected parcel's price per m², build budget, timing, payment plan and upfront land payment already filled in (query string `?from=ldl&...`). The land payment is deducted from opening cash before the simulation; opening cash is pre-set to land + the default working cash, and you should adjust it to your real liquidity.
+
 ## Reproducible by design
 
 * Seeded PRNG (mulberry32) and an Irwin–Hall normal (sum of 12 uniforms − 6), so a seed always gives the same answer.
