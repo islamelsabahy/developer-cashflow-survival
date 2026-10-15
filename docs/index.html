@@ -86,8 +86,10 @@ bdi{unicode-bidi:isolate}
 .grp>h3 .q,th .q{margin-inline:3px}
 .tip{position:absolute;z-index:50;background:#0b0f16;color:var(--ink);border:1px solid var(--amber);font:400 .8rem/1.5 var(--sans);padding:8px 10px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.5);pointer-events:none;white-space:normal;text-align:start;text-transform:none;letter-spacing:0}
 @media print{.q,.tip{display:none!important}}
+.po{display:none}
 .heat td.na{background:#243044;color:var(--dim)}
 @media print{
+ .po{display:block}
  :root{--bg:#fff;--panel:#fff;--line:#bbb;--ink:#111;--dim:#555}
  body{background:#fff}body:before{display:none}
  .tools,#inputs,#runrow{display:none!important}
@@ -107,6 +109,7 @@ bdi{unicode-bidi:isolate}
   </div>
   <div class="tools">
     <button id="lang">EN</button>
+    <button id="csv"></button>
     <button id="pdf"></button>
   </div>
 </header>
@@ -134,6 +137,7 @@ bdi{unicode-bidi:isolate}
   </div>
 
   <div id="out">
+    <div class="card po" id="po"></div>
     <div class="card" id="c_verdict">
       <h2 id="t_verdict"></h2>
       <div class="gauge"><div class="big" id="pbig">–</div><div class="verdict" id="pverd"></div></div>
@@ -167,7 +171,8 @@ var T={
  inputs:{ar:"مدخلات المشروع",en:"PROJECT INPUTS"}, paths:{ar:"عدد السيناريوهات",en:"Simulated paths"}, seed:{ar:"بذرة العشوائية",en:"Random seed"},
  target:{ar:"أقصى احتمال عجز مقبول",en:"Max acceptable risk"},
  run:{ar:"شغّل المحاكاة",en:"Run simulation"}, reset:{ar:"رجّع الافتراضي",en:"Reset"},
- pdf:{ar:"تقرير PDF",en:"PDF report"},
+ pdf:{ar:"تقرير PDF",en:"PDF report"}, csv:{ar:"CSV",en:"CSV"},
+ po_t:{ar:"افتراضات التقرير",en:"Report assumptions"}, po_res:{ar:"النتيجة",en:"Result"},
  xray_in:{ar:"مقارنة خطط السداد (قيمة حالية)",en:"PAYMENT PLAN X-RAY"}, rate:{ar:"معدل الخصم السنوي",en:"Annual discount rate"},
  addplan:{ar:"+ أضف خطة",en:"+ Add plan"},
  verdict:{ar:"احتمال العجز قبل التسليم",en:"PROBABILITY OF SHORTFALL BEFORE DELIVERY"},
@@ -445,7 +450,7 @@ function applyText(){
   document.documentElement.lang=lang; document.documentElement.dir=lang==="ar"?"rtl":"ltr";
   $("lang").textContent=lang==="ar"?"EN":"عربي";
   var map={t_kicker:"kicker",t_title:"title",t_sub:"sub",t_warn:"warn",t_inputs:"inputs",t_paths:"paths",t_seed:"seed",t_target:"target",run:"run",reset:"reset",pdf:"pdf",
-   t_xray_in:"xray_in",t_land:"land",t_back:"back",t_rate:"rate",addplan:"addplan",t_verdict:"verdict",t_fan:"fan",t_torn:"torn",t_torn_h:"torn_h",t_heat:"heat",t_heat_h:"heat_h",t_xray:"xray",t_xray_h:"xray_h",t_foot:"foot",
+   t_xray_in:"xray_in",csv:"csv",t_land:"land",t_back:"back",t_rate:"rate",addplan:"addplan",t_verdict:"verdict",t_fan:"fan",t_torn:"torn",t_torn_h:"torn_h",t_heat:"heat",t_heat_h:"heat_h",t_xray:"xray",t_xray_h:"xray_h",t_foot:"foot",
    l_b90:"b90",l_b50:"b50",l_med:"med",l_line:"line"};
   Object.keys(map).forEach(function(id){$(id).textContent=t(map[id])});
   Array.prototype.forEach.call(document.querySelectorAll("[data-l]"),function(e){e.textContent=L[e.dataset.l][lang]});
@@ -498,7 +503,7 @@ function render(){
   var fc=sim.final_cash;
   $("kv").innerHTML=[["median",f1(fc["0.5"])],["p5",f1(fc["0.05"])],["p95",f1(fc["0.95"])],["defaults",sim.defaults+" / "+sim.paths],["firstm",worst?String(wi):"–"]]
    .map(function(r){return "<div><b>"+esc(r[1])+"</b><span>"+esc(t(r[0]))+qh(r[0])+"</span></div>"}).join("");bindHelp();
-  drawFan(sim,p); drawTorn(last.torn); drawHeat(last.heat); renderMax(); renderXray();
+  renderPO(); drawFan(sim,p); drawTorn(last.torn); drawHeat(last.heat); renderMax(); renderXray();
 }
 
 function drawFan(sim,p){
@@ -554,6 +559,33 @@ function renderXray(){
   $("xray").innerHTML=s+"</table>";bindHelp();
 }
 
+function renderPO(){
+  if(!last) return;
+  var p=last.p,rows=[],pr=pricingParams();
+  ORDER.forEach(function(k){rows.push([L[k][lang],p[k]+(UNIT[k]?" · "+UNIT[k][lang==="ar"?0:1]:"")])});
+  [["price_m2",pr.price_m2],["area",pr.area],["down",pr.down_pct*100],["termm",pr.term],["freq",pr.freq],["p_dl",pr.delivery_pct*100],["p_bl",pr.balloon_pct*100],["p_cs",pr.cash_share*100],["p_cd",pr.cash_discount*100],["p_mp",pr.maint_pct*100],["growth",pr.price_growth*100],["land",Number($("land_up").value)||0]]
+   .forEach(function(r){rows.push([t(r[0]),r[1]+(UNIT[r[0]]?" · "+UNIT[r[0]][lang==="ar"?0:1]:"")])});
+  var h="<h2>"+esc(t("po_t"))+"</h2><div class='kv'>"+rows.map(function(r){return "<div><b>"+esc(String(r[1]))+"</b><span>"+esc(r[0])+"</span></div>"}).join("")+"</div>";
+  $("po").innerHTML=h;
+}
+function csvCell(v){if(typeof v==="number")return String(v);v=String(v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function exportCsv(){
+  if(!last) return;
+  var sim=last.sim,out=[["section","key","value"]],F=sim.fan;
+  out.push(["result","default_prob",sim.default_prob],["result","defaults",sim.defaults],["result","paths",sim.paths]);
+  ["0.05","0.5","0.95"].forEach(function(q){out.push(["final_cash_q"+q,"",sim.final_cash[q]])});
+  ORDER.forEach(function(k){out.push(["input",k,last.p[k]])});
+  out.push([]);out.push(["fan","month","q05","q25","q50","q75","q95"]);
+  for(var i=0;i<F["0.5"].length;i++) out.push(["fan",i,F["0.05"][i],F["0.25"][i],F["0.5"][i],F["0.75"][i],F["0.95"][i]]);
+  out.push([]);out.push(["tornado","driver","p_low","p_high"]);
+  last.torn.rows.forEach(function(r){out.push(["tornado",r.driver,r.p_low,r.p_high])});
+  out.push([]);out.push(["heatmap","down_pct \\ term"].concat(last.heat.terms));
+  last.heat.grid.forEach(function(row,i){out.push(["heatmap",last.heat.down_pcts[i]].concat(row.map(function(v){return v===null?"":v})))});
+  var txt="\ufeff"+out.map(function(r){return r.map(csvCell).join(",")}).join("\r\n");
+  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download="survival-"+new Date().toISOString().slice(0,10)+".csv";document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
+}
+$("csv").onclick=exportCsv;
 $("run").onclick=run;
 $("reset").onclick=function(){ORDER.forEach(function(k){$("p_"+k).value=D[k]});ST=st0();$("land_up").value=0;IMP=null;showImp();buildPricing();plans=JSON.parse(JSON.stringify(PLANS0));buildPlans();run()};
 $("lang").onclick=function(){lang=lang==="ar"?"en":"ar";try{localStorage.setItem("surv_lang",lang)}catch(e){}applyText();buildPricing();buildPlans();showImp();render()};

@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.3.0
+- CSV export of results (summary, fan chart, tornado, risk map) and a printed "report assumptions" block in the PDF report.
 - Import from Land Deal Lab through the URL (`?from=ldl&...`), with an "imported" banner and a "land paid up front" field deducted from opening cash.
 
 ## 0.2.0
